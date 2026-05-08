@@ -102,7 +102,7 @@ export default function Footer() {
           </div>
 
           {/* Contact & Founder Row */}
-          <div className="grid md:grid-cols-2 gap-10 py-10 border-t border-white/5 mb-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 py-10 border-t border-white/5 mb-6">
             <div>
               <h4 className="text-white/80 font-bold text-sm mb-4 font-[Outfit]">Contact Us</h4>
               <div className="space-y-4">
@@ -119,19 +119,36 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="glass-card p-6 border border-[#4ADE80]/10 bg-white/5">
-              <h4 className="text-[#4ADE80] font-bold text-sm mb-4 font-[Outfit] tracking-wider uppercase">Founder</h4>
-              <div className="flex gap-4 items-center mb-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#4ADE80] to-[#14532D] text-white flex items-center justify-center text-xl font-bold font-['Outfit']">
-                  DG
+            <div className="lg:col-span-2 glass-card p-6 md:p-8 border border-[#4ADE80]/10 bg-gradient-to-br from-white/5 to-transparent">
+              <h4 className="text-[#4ADE80] font-bold text-sm mb-6 font-[Outfit] tracking-wider uppercase">Founding Team</h4>
+              <div className="grid sm:grid-cols-2 gap-8 mb-6">
+                {/* Founder 1 */}
+                <div className="flex gap-4 items-start">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#4ADE80] to-[#14532D] text-white flex items-center justify-center text-xl font-bold font-['Outfit'] shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+                    DG
+                  </div>
+                  <div>
+                    <h5 className="text-white font-semibold text-lg">Divyani Gour</h5>
+                    <p className="text-[#4ADE80] text-sm font-medium mb-1">Founder</p>
+                    <a href="mailto:divyanigour2@gmail.com" className="text-white/40 text-xs block hover:text-white transition-colors">divyanigour2@gmail.com</a>
+                    <p className="text-white/40 text-xs">+91 9011492357</p>
+                  </div>
                 </div>
-                <div>
-                  <h5 className="text-white font-semibold text-lg">Divyani Gour</h5>
-                  <p className="text-white/40 text-sm font-light text-[Inter]">Founder, AgriVeda</p>
+
+                {/* Founder 2 */}
+                <div className="flex gap-4 items-start">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-bl from-[#8B5E3C] to-[#14532D] text-white flex items-center justify-center text-xl font-bold font-['Outfit'] shadow-[0_0_20px_rgba(139,94,60,0.2)]">
+                    S
+                  </div>
+                  <div>
+                    <h5 className="text-white font-semibold text-lg">Suraj</h5>
+                    <p className="text-[#8B5E3C] text-sm font-medium mb-1">Co-Founder</p>
+                    <p className="text-white/40 text-xs">+91 87675 56984</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-[#F8FAF5]/60 text-sm leading-relaxed italic">
-                “Building AI-powered sustainable farming solutions for Indian farmers.”
+              <p className="text-[#F8FAF5]/60 text-sm leading-relaxed italic border-t border-white/5 pt-4">
+                “Building AI-powered sustainable farming solutions for the future of Indian agriculture.”
               </p>
             </div>
           </div>
