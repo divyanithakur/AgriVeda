@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { Leaf, Menu, X, Sprout } from 'lucide-react'
 
 const navLinks = [
@@ -46,25 +47,25 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
-              className="text-sm font-medium text-green-100/70 hover:text-green-400 transition-colors duration-200"
+              to={link.href}
+              className="text-sm font-medium text-[#F8FAF5]/70 hover:text-[#4ADE80] transition-colors duration-200"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <button className="btn-secondary text-sm py-2.5 px-5">Sign In</button>
-          <button className="btn-primary text-sm py-2.5 px-5">Start Free Trial</button>
+          <Link to="/login" className="btn-secondary text-sm py-2.5 px-6">Login</Link>
+          <Link to="/dashboard" className="btn-primary text-sm py-2.5 px-6">Dashboard Access</Link>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-green-400 p-2"
+          className="md:hidden text-[#4ADE80] p-2"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -78,22 +79,22 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-green-500/10 px-6 py-4"
+            className="md:hidden glass border-t border-white/5 px-6 py-4"
           >
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  to={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="text-green-100/80 hover:text-green-400 font-medium transition-colors"
+                  className="text-[#F8FAF5]/80 hover:text-[#4ADE80] font-medium transition-colors"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
               <div className="flex gap-3 pt-2">
-                <button className="btn-secondary text-sm py-2 px-4 flex-1">Sign In</button>
-                <button className="btn-primary text-sm py-2 px-4 flex-1">Start Free</button>
+                <Link to="/login" className="btn-secondary text-sm py-2 px-4 flex-1 text-center">Login</Link>
+                <Link to="/dashboard" className="btn-primary text-sm py-2 px-4 flex-1 text-center">Dashboard</Link>
               </div>
             </div>
           </motion.div>

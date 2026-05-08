@@ -101,18 +101,39 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Contact Row */}
-          <div className="flex flex-wrap gap-6 py-6 border-t border-white/5 mb-6">
-            {[
-              { icon: Mail, text: 'hello@agriveda.in' },
-              { icon: Phone, text: '+91 1800-AGRIVEDA' },
-              { icon: MapPin, text: 'Bengaluru, Karnataka, India' },
-            ].map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-2 text-white/40 text-sm">
-                <Icon className="w-4 h-4 text-green-500/60" />
-                {text}
+          {/* Contact & Founder Row */}
+          <div className="grid md:grid-cols-2 gap-10 py-10 border-t border-white/5 mb-6">
+            <div>
+              <h4 className="text-white/80 font-bold text-sm mb-4 font-[Outfit]">Contact Us</h4>
+              <div className="space-y-4">
+                {[
+                  { icon: Mail, text: 'divyanigour2@gmail.com' },
+                  { icon: Phone, text: '+91 9011492357' },
+                  { icon: MapPin, text: 'Ansing, District Washim, Maharashtra, India' },
+                ].map(({ icon: Icon, text }) => (
+                  <div key={text} className="flex items-center gap-3 text-white/50 text-sm">
+                    <Icon className="w-4 h-4 text-[#4ADE80]" />
+                    {text}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="glass-card p-6 border border-[#4ADE80]/10 bg-white/5">
+              <h4 className="text-[#4ADE80] font-bold text-sm mb-4 font-[Outfit] tracking-wider uppercase">Founder</h4>
+              <div className="flex gap-4 items-center mb-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#4ADE80] to-[#14532D] text-white flex items-center justify-center text-xl font-bold font-['Outfit']">
+                  DG
+                </div>
+                <div>
+                  <h5 className="text-white font-semibold text-lg">Divyani Gour</h5>
+                  <p className="text-white/40 text-sm font-light text-[Inter]">Founder, AgriVeda</p>
+                </div>
+              </div>
+              <p className="text-[#F8FAF5]/60 text-sm leading-relaxed italic">
+                “Building AI-powered sustainable farming solutions for Indian farmers.”
+              </p>
+            </div>
           </div>
 
           {/* Bottom bar */}
