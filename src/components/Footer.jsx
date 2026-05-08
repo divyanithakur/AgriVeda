@@ -22,35 +22,88 @@ export default function Footer() {
 
         <div ref={ref} className="relative max-w-7xl mx-auto px-6 py-20">
           {/* Newsletter CTA */}
+          {/* Premium Cinematic CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            className="glass-card p-10 md:p-14 text-center mb-20 relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, rgba(74,222,128,0.06), rgba(20,83,45,0.12))' }}
+            initial={{ opacity: 0, y: 50, scale: 0.98 }}
+            animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full relative overflow-hidden rounded-[40px] mb-24 border border-[#4ADE80]/30 shadow-[0_30px_80px_rgba(74,222,128,0.15)] bg-gradient-to-br from-[#071508] to-[#14532D]"
           >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-green-500/8 blur-3xl" />
-            <div className="relative z-10">
-              <div className="section-tag mx-auto mb-5">
-                <Leaf className="w-3 h-3" />
-                Join the Revolution
+            {/* Ambient Background Effects */}
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz4KPC9zdmc+')] opacity-60 mix-blend-screen" />
+            <div className="absolute top-[-50%] left-[-20%] w-[1000px] h-[1000px] bg-[#4ADE80]/20 rounded-full blur-[200px] animate-pulse-glow" />
+            <div className="absolute bottom-[-50%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px]" />
+            
+            <div className="relative z-10 flex flex-col lg:flex-row items-center p-8 lg:p-16 gap-12">
+              
+              {/* Left Side Visual: AI Hologram Feel */}
+              <div className="hidden lg:flex flex-1 items-center justify-center relative w-full h-[350px]">
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] bg-gradient-to-b from-[#4ADE80]/30 to-transparent rounded-full blur-2xl" />
+                 
+                 {/* Floating Hologram Rings */}
+                 <motion.div 
+                   animate={{ rotateX: [60, 60], rotateZ: [0, 360] }}
+                   transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                   className="absolute w-[300px] h-[300px] border-2 border-[#4ADE80]/30 rounded-full border-t-[#4ADE80]"
+                 />
+                 <motion.div 
+                   animate={{ rotateX: [70, 70], rotateZ: [360, 0] }}
+                   transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+                   className="absolute w-[220px] h-[220px] border-2 border-[#4ADE80]/40 rounded-full border-b-[#4ADE80]/80 border-dashed"
+                 />
+                 
+                 {/* Plant Vector Mock */}
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] flex flex-col items-center">
+                    <Leaf className="w-24 h-24 text-[#4ADE80] drop-shadow-[0_0_20px_rgba(74,222,128,0.8)]" />
+                    <motion.div 
+                       initial={{ height: 0 }}
+                       whileInView={{ height: 80 }}
+                       transition={{ duration: 1.5, delay: 0.5 }}
+                       className="w-1 bg-gradient-to-t from-transparent via-[#4ADE80] to-transparent mt-2 opacity-50"
+                    />
+                 </div>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black font-[Outfit] text-white mb-4">
-                Ready to Transform <span className="gradient-text">Your Farm?</span>
-              </h2>
-              <p className="text-green-100/50 mb-8 max-w-lg mx-auto">
-                Join 2.4 lakh Indian farmers already using AgriVeda. Get AI-powered insights delivered to your WhatsApp.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email or phone"
-                  className="flex-1 px-5 py-3.5 rounded-full bg-white/8 border border-green-500/20 text-white placeholder:text-white/30 text-sm outline-none focus:border-green-400/50 transition-colors"
-                />
-                <button className="btn-primary flex items-center gap-2 whitespace-nowrap">
-                  Get Started Free <ArrowRight className="w-4 h-4" />
-                </button>
+
+              {/* Right Side Content */}
+              <div className="flex-1 text-center lg:text-left z-20">
+                <span className="inline-flex items-center gap-2 bg-[#4ADE80]/10 border border-[#4ADE80]/30 text-[#4ADE80] font-bold text-xs tracking-[0.2em] uppercase px-4 py-2 rounded-full shadow-[0_0_15px_rgba(74,222,128,0.2)] mb-6">
+                  <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse"></span>
+                  Join the Revolution
+                </span>
+                
+                <h2 className="text-4xl lg:text-6xl font-black font-['Outfit'] text-white mb-6 leading-[1.1] tracking-tight drop-shadow-xl">
+                  Ready to Transform <br/>
+                  <span className="bg-gradient-to-r from-[#4ADE80] to-[#22C55E] text-transparent bg-clip-text drop-shadow-[0_0_20px_rgba(74,222,128,0.4)]">Your Farm?</span>
+                </h2>
+                
+                <p className="text-white/60 text-lg lg:text-xl font-light mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                  Join <strong className="text-white font-medium">2.4 lakh+</strong> Indian farmers already using AgriVeda. Get AI-powered insights delivered directly to your WhatsApp.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-8">
+                  <button className="w-full sm:w-auto bg-gradient-to-r from-[#4ADE80] to-[#22C55E] hover:to-[#4ADE80] text-[#071508] font-bold text-lg px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(74,222,128,0.4)] hover:shadow-[0_0_40px_rgba(74,222,128,0.6)] hover:-translate-y-1">
+                    Get Started Free <ArrowRight className="w-5 h-5" />
+                  </button>
+                  <button className="w-full sm:w-auto bg-white/5 border border-white/20 hover:bg-white/10 text-white font-semibold text-lg px-8 py-4 rounded-xl flex items-center justify-center transition-all duration-300 backdrop-blur-md">
+                    Watch Demo
+                  </button>
+                </div>
+                
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3">
+                  {[
+                    'No credit card required',
+                    'Setup in 2 minutes',
+                    'Cancel anytime'
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                       <div className="w-4 h-4 rounded-full bg-[#4ADE80]/20 flex items-center justify-center">
+                         <svg className="w-2.5 h-2.5 text-[#4ADE80]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                       </div>
+                       <span className="text-white/50 text-xs font-semibold uppercase tracking-wider">{text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <p className="text-white/25 text-xs mt-4">No credit card required • Setup in 2 minutes • Cancel anytime</p>
             </div>
           </motion.div>
 
