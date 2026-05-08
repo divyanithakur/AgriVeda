@@ -1,248 +1,193 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, Leaf, Droplets, Sun, Wind } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle2, Leaf, CloudRain, Droplets, Wind, TrendingUp } from 'lucide-react'
 
-// Floating organic particle
-function Particle({ style }) {
+function Widget({ children, className, style, delay = 0 }) {
   return (
-    <div
-      className="particle"
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={`absolute glass-card p-4 shadow-2xl ${className}`}
       style={style}
-    />
-  )
-}
-
-// Animated dashboard card floating in hero
-function DashboardFloat() {
-  return (
-    <div className="relative w-full max-w-lg mx-auto">
-      {/* Main dashboard card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.92 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1, delay: 0.6, ease: 'easeOut' }}
-        className="glass-card p-6 relative overflow-hidden"
-        style={{ animation: 'float 6s ease-in-out infinite' }}
-      >
-        {/* Glowing orb inside */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-green-400/10 blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-green-600/10 blur-3xl" />
-
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-green-400/60 text-xs font-semibold tracking-widest uppercase">Live Farm Monitor</p>
-              <h3 className="text-white font-bold text-lg font-[Outfit]">Soil Health Dashboard</h3>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-green-400" />
-            </div>
-          </div>
-
-          {/* Soil Score */}
-          <div className="mb-5">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-green-100/60">Soil Health Score</span>
-              <span className="text-green-400 font-bold text-sm">87/100</span>
-            </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: '87%' }}
-                transition={{ duration: 1.5, delay: 1.2, ease: 'easeOut' }}
-                className="h-full bg-gradient-to-r from-green-500 to-green-300 rounded-full"
-              />
-            </div>
-          </div>
-
-          {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { icon: Droplets, label: 'Moisture', value: '72%', color: 'text-blue-400' },
-              { icon: Sun, label: 'Temp', value: '28°C', color: 'text-yellow-400' },
-              { icon: Wind, label: 'pH Level', value: '6.8', color: 'text-green-400' },
-            ].map(({ icon: Icon, label, value, color }) => (
-              <div key={label} className="bg-white/5 rounded-xl p-3 text-center">
-                <Icon className={`w-4 h-4 ${color} mx-auto mb-1`} />
-                <p className="text-white/40 text-xs mb-1">{label}</p>
-                <p className={`font-bold text-sm ${color}`}>{value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Recommendation */}
-          <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
-            <p className="text-xs text-green-400/70 uppercase tracking-wider mb-1 font-semibold">AI Recommendation</p>
-            <p className="text-sm text-green-100/80">Apply <strong className="text-green-400">Rhizobium biofertilizer</strong> for 23% yield boost</p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Floating mini cards */}
-      <motion.div
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 1.0 }}
-        className="absolute -left-16 top-12 glass-card p-3 w-40 hidden lg:block"
-        style={{ animation: 'float2 5s ease-in-out infinite' }}
-      >
-        <p className="text-xs text-green-400/60 mb-1">Rain Alert</p>
-        <div className="flex items-center gap-2">
-          <Droplets className="text-blue-400 w-4 h-4" />
-          <p className="text-white font-bold text-sm">In 2 Days</p>
-        </div>
-        <p className="text-xs text-white/40 mt-1">Delay irrigation</p>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 1.1 }}
-        className="absolute -right-16 bottom-12 glass-card p-3 w-44 hidden lg:block"
-        style={{ animation: 'float 7s ease-in-out infinite' }}
-      >
-        <p className="text-xs text-green-400/60 mb-1">Carbon Credits</p>
-        <div className="flex items-center gap-2">
-          <Leaf className="text-green-400 w-4 h-4" />
-          <p className="text-white font-bold text-sm">₹4,200 Earned</p>
-        </div>
-        <p className="text-xs text-white/40 mt-1">+18% this month</p>
-      </motion.div>
-    </div>
+    >
+      {children}
+    </motion.div>
   )
 }
 
 export default function Hero() {
-  const particles = Array.from({ length: 16 }, (_, i) => ({
-    width: `${Math.random() * 8 + 3}px`,
-    height: `${Math.random() * 8 + 3}px`,
-    left: `${Math.random() * 100}%`,
-    animationDuration: `${Math.random() * 12 + 8}s`,
-    animationDelay: `${Math.random() * 6}s`,
-    opacity: Math.random() * 0.5 + 0.1,
-  }))
-
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden"
-      style={{
-        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(74,222,128,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(20,83,45,0.18) 0%, transparent 60%), #0a1f0f',
-      }}
-    >
-      {/* Background grid */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(74,222,128,1) 1px, transparent 1px), linear-gradient(90deg, rgba(74,222,128,1) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
+    <section className="relative min-h-screen flex items-center pt-32 pb-24 overflow-hidden bg-[#071508]">
+      {/* Background cinematic glow */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-[#14532D]/40 rounded-full blur-[120px] animate-pulse-glow mix-blend-screen" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[#4ADE80]/20 rounded-full blur-[150px] animate-pulse-glow mix-blend-screen" style={{ animationDelay: '2s' }} />
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_20%,transparent_100%)]" />
+      </div>
 
-      {/* Particles */}
-      {particles.map((p, i) => (
-        <Particle key={i} style={p} />
-      ))}
-
-      {/* Large glowing blobs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-green-500/6 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-green-700/8 blur-[100px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 w-full">
+      <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
-          <div>
+          
+          {/* Left Content */}
+          <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="section-tag mb-6"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="section-tag mb-8"
             >
-              <Leaf className="w-3 h-3" />
-              India's #1 AgriTech AI Platform
+              <Leaf className="w-4 h-4" />
+              Intelligence for Indian Agriculture
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-5xl md:text-6xl xl:text-7xl font-black font-[Outfit] leading-[1.06] tracking-tight mb-6"
+              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+              className="text-5xl sm:text-6xl lg:text-[76px] font-medium leading-[1.05] tracking-tight mb-8 font-['Outfit']"
             >
-              Ancient Wisdom,{' '}
-              <span className="gradient-text">Modern</span>{' '}
-              Agriculture
+              Transform Soil Intelligence Into{' '}
+              <span className="gradient-text-green font-semibold">Farmer Prosperity.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.35 }}
-              className="text-lg text-green-100/60 leading-relaxed mb-10 max-w-xl"
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="text-xl text-[#F8FAF5]/60 leading-relaxed mb-10 font-[Inter] font-light"
             >
-              AgriVeda uses AI-powered soil intelligence, weather forecasting, 
-              biofertilizer recommendations, and carbon credit tracking to help 
-              Indian farmers grow sustainably and profitably.
+              AgriVeda combines AI-powered soil analysis, weather forecasting, biofertilizer intelligence, and carbon credit tracking to help Indian farmers farm sustainably and profitably.
             </motion.p>
 
-            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.45 }}
-              className="flex gap-8 mb-10"
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              className="flex flex-wrap items-center gap-5"
             >
-              {[
-                { value: '2.4L+', label: 'Farmers' },
-                { value: '18 States', label: 'Coverage' },
-                { value: '₹620Cr', label: 'Farmer Income' },
-              ].map(({ value, label }) => (
-                <div key={label}>
-                  <p className="text-2xl font-black font-[Outfit] gradient-text">{value}</p>
-                  <p className="text-xs text-green-100/50 mt-0.5">{label}</p>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.55 }}
-              className="flex flex-wrap gap-4"
-            >
-              <button className="btn-primary flex items-center gap-2">
-                Start Free Trial <ArrowRight className="w-4 h-4" />
+              <button className="btn-primary group">
+                Start Free Trial
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="btn-secondary flex items-center gap-2">
-                <Play className="w-4 h-4 fill-current" />
-                Explore Dashboard
+              <button className="btn-secondary group">
+                <Play className="w-4 h-4 mr-2 fill-current" />
+                Watch Live Demo
               </button>
             </motion.div>
 
-            {/* Trust badges */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="mt-8 flex items-center gap-6 flex-wrap"
+              transition={{ duration: 1, delay: 0.6 }}
+              className="mt-16 flex items-center gap-8 border-t border-white/10 pt-8"
             >
-              {['ICAR Certified', 'DST Funded', 'YC Backed'].map((badge) => (
-                <div key={badge} className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                  <span className="text-xs text-green-100/40 font-medium">{badge}</span>
-                </div>
-              ))}
+              <div>
+                <p className="text-3xl font-semibold text-white font-['Outfit']">2.4L+</p>
+                <p className="text-sm text-white/50 mt-1 uppercase tracking-wider">Farmers Trusted</p>
+              </div>
+              <div className="w-px h-10 bg-white/10" />
+              <div>
+                <p className="text-3xl font-semibold text-[#4ADE80] font-['Outfit']">₹620Cr</p>
+                <p className="text-sm text-white/50 mt-1 uppercase tracking-wider">Farmer Income</p>
+              </div>
             </motion.div>
           </div>
 
-          {/* Right: Dashboard */}
-          <div className="relative">
-            <DashboardFloat />
+          {/* Right Visuals - Cinematic Floating Dashboard Elements */}
+          <div className="relative h-[600px] hidden lg:block">
+            {/* Main Soil Dashboard */}
+            <Widget delay={0.4} className="w-[340px] right-4 top-1/2 -translate-y-1/2 z-20 animate-float">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-white font-semibold flex items-center gap-2">
+                    <Leaf className="w-4 h-4 text-[#4ADE80]" />
+                    Soil Health
+                  </h3>
+                  <p className="text-xs text-white/40 mt-1">Real-time analysis</p>
+                </div>
+                <div className="w-12 h-12 rounded-full border-[3px] border-[#4ADE80] flex items-center justify-center">
+                  <span className="text-[#4ADE80] font-bold text-sm">92</span>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                {[
+                  { l: 'Nitrogen (N)', v: '85%', c: '#4ADE80' },
+                  { l: 'Phosphorus (P)', v: '70%', c: '#F8FAF5' },
+                  { l: 'Potassium (K)', v: '90%', c: '#4ADE80' }
+                ].map((stat, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className="text-white/60">{stat.l}</span>
+                      <span className="text-white font-medium">{stat.v}</span>
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: stat.v }}
+                        transition={{ duration: 1.5, delay: 1 + (i*0.2), ease: 'easeOut' }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: stat.c }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-white/5">
+                <p className="text-[#4ADE80] text-xs font-medium flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Optimal for Wheat Cultivation
+                </p>
+              </div>
+            </Widget>
+
+            {/* Weather Widget */}
+            <Widget delay={0.6} className="w-[240px] left-0 top-[10%] z-10 animate-float-slow" style={{ animationDelay: '1s' }}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <CloudRain className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-white font-semibold">24°C</p>
+                  <p className="text-xs text-white/50">Rain expected 4PM</p>
+                </div>
+              </div>
+              <div className="bg-white/5 rounded-lg p-3">
+                <p className="text-xs text-blue-300 font-medium whitespace-nowrap">Auto-delaying irrigation system</p>
+              </div>
+            </Widget>
+
+            {/* Carbon Credits Widget */}
+            <Widget delay={0.8} className="w-[260px] left-8 bottom-[15%] z-30 animate-float" style={{ animationDelay: '0.5s' }}>
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Carbon Earnings</p>
+                  <p className="text-2xl font-semibold text-white">₹4,250</p>
+                </div>
+                <TrendingUp className="w-5 h-5 text-[#4ADE80]" />
+              </div>
+              <svg className="w-full h-12 overflow-visible">
+                <motion.path 
+                  d="M0,40 Q20,20 40,30 T80,20 T120,25 T160,10 T200,15 T240,5" 
+                  fill="none" 
+                  stroke="#4ADE80" 
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  initial={{ strokeDasharray: "300", strokeDashoffset: "300" }}
+                  animate={{ strokeDashoffset: 0 }}
+                  transition={{ duration: 2, delay: 1.5, ease: "easeInOut" }}
+                />
+              </svg>
+            </Widget>
           </div>
+
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a1f0f] to-transparent" />
+      
+      {/* Cinematic bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#071508] to-transparent z-10 pointer-events-none" />
     </section>
   )
 }
