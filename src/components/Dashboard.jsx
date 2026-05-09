@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Leaf, Droplets, TrendingUp, Sun, ChevronRight, Activity, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 
 // Elegant Apple-style card
