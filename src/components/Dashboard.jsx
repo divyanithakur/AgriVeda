@@ -1,38 +1,35 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { Leaf, Droplets, TrendingUp, Sun, ChevronRight, Activity, ArrowUpRight, CheckCircle2 } from 'lucide-react'
 
 // Elegant Apple-style card
 function MetricCard({ title, value, subValue, trend, icon: Icon, delay }) {
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: "0px" })
   
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className="glass-card p-6 border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.5)] group"
+      className="fade-slide-up bg-white p-6 border border-dark-text/5 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
+      style={{ transitionDelay: `${delay * 1000}s` }}
     >
       <div className="flex justify-between items-start mb-6">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center border border-white/10 shadow-inner group-hover:bg-white/10 transition-colors duration-300">
-          <Icon className="w-6 h-6 text-[#4ADE80]" />
+        <div className="w-12 h-12 rounded-xl bg-green-bg flex items-center justify-center group-hover:bg-primary-green transition-colors duration-300">
+          <Icon className="w-6 h-6 text-primary-green group-hover:text-white transition-colors duration-300" />
         </div>
         {trend && (
-          <div className="flex items-center gap-1 text-[#4ADE80] text-xs font-bold tracking-wide bg-[#4ADE80]/10 border border-[#4ADE80]/20 px-3 py-1.5 rounded-full shadow-[0_0_15px_rgba(74,222,128,0.2)]">
+          <div className="flex items-center gap-1 text-primary-green text-xs font-bold tracking-wide bg-green-bg px-3 py-1.5 rounded-full border border-primary-green/10">
             <TrendingUp className="w-3.5 h-3.5" /> {trend}
           </div>
         )}
       </div>
       <div>
-        <h4 className="text-white/50 text-sm font-semibold mb-2 font-[Inter] tracking-wide">{title}</h4>
+        <h4 className="text-dark-text/50 text-sm font-semibold mb-2 font-display tracking-wide uppercase">{title}</h4>
         <div className="flex items-baseline gap-2">
-          <span className="text-4xl font-bold text-white font-['Outfit'] drop-shadow-md">{value}</span>
-          {subValue && <span className="text-white/40 text-sm font-semibold">{subValue}</span>}
+          <span className="text-4xl font-black text-dark-text font-display">{value}</span>
+          {subValue && <span className="text-dark-text/40 text-sm font-semibold">{subValue}</span>}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -48,46 +45,40 @@ const chartData = [
 ]
 
 export default function Dashboard() {
-  const sectionRef = useRef(null)
-  const inView = useInView(sectionRef, { once: true, margin: "-100px" })
   const [hoveredData, setHoveredData] = useState(null)
 
-  return (
-    <section id="dashboard" className="py-32 relative bg-[#071508] z-20 overflow-hidden">
-      {/* Background Cinematic Glows */}
-      <div className="absolute hidden lg:block top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#14532D]/30 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[150px] pointer-events-none" />
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
 
-      <div ref={sectionRef} className="max-w-[1400px] mx-auto px-6 relative z-10">
+    document.querySelectorAll('.fade-slide-up').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section id="dashboard" className="py-24 relative bg-white z-20 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10 section-padding">
         
-        <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-16 gap-6 fade-slide-up">
           <div className="max-w-2xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              className="text-[#4ADE80] font-bold tracking-[0.2em] text-xs uppercase mb-4"
-            >
+            <div className="text-primary-green font-bold tracking-[0.2em] text-xs uppercase mb-4">
               Enterprise Dashboard
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.1 }}
-              className="text-5xl md:text-6xl font-bold font-['Outfit'] text-white leading-tight tracking-tight"
-            >
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black font-display text-dark-text leading-tight tracking-tight">
               Smart Farming Analytics<br/>
-              <span className="text-white/40">Simplified into perfection.</span>
-            </motion.h2>
+              <span className="text-primary-green/40">Simplified into perfection.</span>
+            </h2>
           </div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.2 }}
-          >
-            <button className="flex items-center gap-2 text-white hover:text-[#4ADE80] transition-colors font-semibold bg-white/5 border border-white/10 px-6 py-3 rounded-full hover:bg-white/10 hover:shadow-[0_0_20px_rgba(74,222,128,0.2)]">
-              Explore Live Platform <ArrowUpRight className="w-5 h-5" />
+          <div>
+            <button className="cta-button">
+              Explore Live Platform <ArrowUpRight className="w-5 h-5 ml-2" />
             </button>
-          </motion.div>
+          </div>
         </div>
 
         {/* Dashboard Top Grid */}
@@ -98,27 +89,25 @@ export default function Dashboard() {
           <MetricCard title="Better Profitability" value="2.4x" subValue="Margin" trend="Proven" icon={CheckCircle2} delay={0.5} />
         </div>
 
-        {/* Massive Data Visualizer - Fixed Graphic Area */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full glass-card overflow-hidden p-8 lg:p-12 border border-[#4ADE80]/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]"
+        {/* Massive Data Visualizer */}
+        <div 
+          className="fade-slide-up w-full bg-cream rounded-3xl overflow-hidden p-8 lg:p-12 border border-dark-text/5 shadow-premium"
+          style={{ transitionDelay: '0.6s' }}
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-16 border-b border-white/5 pb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-16 border-b border-dark-text/10 pb-8">
             <div>
-              <h3 className="text-3xl text-white font-bold font-['Outfit'] tracking-tight">Yield Projection vs Carbon Earnings</h3>
-              <p className="text-white/50 text-sm mt-2 font-medium">Verified historical data mapped via AI interpolation algorithms.</p>
+              <h3 className="text-3xl text-dark-text font-black font-display tracking-tight">Yield Projection vs Carbon Earnings</h3>
+              <p className="text-dark-text/50 text-sm mt-2 font-medium">Verified historical data mapped via AI interpolation algorithms.</p>
             </div>
             
-            <div className="flex gap-6 mt-6 sm:mt-0 bg-[#071508]/80 backdrop-blur-md p-4 rounded-2xl border border-white/5 shadow-inner">
+            <div className="flex gap-6 mt-6 sm:mt-0 bg-white p-4 rounded-2xl border border-dark-text/5 shadow-sm">
                <div className="flex items-center gap-3">
-                 <div className="w-4 h-4 rounded-md bg-gradient-to-t from-[#22C55E] to-[#4ADE80] shadow-[0_0_10px_rgba(74,222,128,0.4)]" /> 
-                 <span className="text-sm font-semibold text-white">Yield Size (t/ha)</span>
+                 <div className="w-4 h-4 rounded-md bg-primary-green shadow-sm" /> 
+                 <span className="text-sm font-semibold text-dark-text">Yield Size</span>
                </div>
                <div className="flex items-center gap-3">
-                 <div className="w-4 h-4 rounded-md bg-gradient-to-t from-blue-600/80 to-blue-400 border border-blue-400/50" /> 
-                 <span className="text-sm font-semibold text-white/70">Carbon Revenue</span>
+                 <div className="w-4 h-4 rounded-md bg-amber shadow-sm" /> 
+                 <span className="text-sm font-semibold text-dark-text/70">Carbon Revenue</span>
                </div>
             </div>
           </div>
@@ -134,40 +123,39 @@ export default function Dashboard() {
                 {/* Secondary bar (Carbon) */}
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={inView ? { height: `${data.heightSecondary}%` } : { height: 0 }}
+                  whileInView={{ height: `${data.heightSecondary}%` }}
                   transition={{ duration: 1.5, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full max-w-[80px] bg-gradient-to-t from-blue-700/60 to-blue-500/80 rounded-t-xl absolute bottom-[12px] transform group-hover:scale-x-110 transition-transform duration-300 border border-blue-400/20"
+                  className="w-full max-w-[80px] bg-amber rounded-t-xl absolute bottom-[12px] group-hover:scale-x-110 transition-transform duration-300"
                 />
                 
                 {/* Primary bar (Yield) */}
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={inView ? { height: `${data.heightPrimary}%` } : { height: 0 }}
+                  whileInView={{ height: `${data.heightPrimary}%` }}
                   transition={{ duration: 1.5, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full max-w-[80px] bg-gradient-to-t from-[#14532D] via-[#22C55E] to-[#4ADE80] rounded-t-xl relative z-10 group-hover:scale-x-110 group-hover:shadow-[0_0_20px_rgba(74,222,128,0.5)] transition-all duration-300 border border-[#4ADE80]/80"
+                  className="w-full max-w-[80px] bg-primary-green rounded-t-xl relative z-10 group-hover:scale-x-110 shadow-sm transition-all duration-300"
                 />
                 
-                <span className="text-white/40 font-bold text-sm mt-5 select-none absolute -bottom-8 group-hover:text-white transition-colors">
+                <span className="text-dark-text/40 font-bold text-sm mt-5 select-none absolute -bottom-8 group-hover:text-primary-green transition-colors">
                    {data.year}
                 </span>
 
-                {/* Floating Interactive Tooltip */}
                 <AnimatePresence>
                   {hoveredData?.year === data.year && (
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                      className="absolute -top-32 w-48 glass-card border border-[#4ADE80]/30 shadow-[0_20px_40px_rgba(0,0,0,0.8)] p-4 z-50 pointer-events-none"
+                      className="absolute -top-32 w-48 bg-white border border-primary-green/10 shadow-2xl rounded-2xl p-4 z-50 pointer-events-none"
                     >
-                      <p className="text-white font-bold mb-2">{data.year} Report</p>
+                      <p className="text-dark-text font-black mb-2 font-display">{data.year} Report</p>
                       <div className="flex justify-between items-center text-sm mb-1">
-                        <span className="text-white/60">Yield:</span>
-                        <span className="text-[#4ADE80] font-bold">{data.yield} t/ha</span>
+                        <span className="text-dark-text/60">Yield:</span>
+                        <span className="text-primary-green font-bold">{data.yield} t/ha</span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-white/60">Revenue:</span>
-                        <span className="text-blue-400 font-bold">{data.carbon}</span>
+                        <span className="text-dark-text/60">Revenue:</span>
+                        <span className="text-amber font-bold">{data.carbon}</span>
                       </div>
                     </motion.div>
                   )}
@@ -175,7 +163,7 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>
