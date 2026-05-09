@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sprout, Mail, Phone, MapPin, Globe, Leaf } from 'lucide-react'
+import { Sprout, Mail, Phone, MapPin } from 'lucide-react'
 
 const footerLinks = {
   Product: ['Soil Intelligence', 'Weather AI', 'Biofertilizer Guide', 'Carbon Credits', 'Analytics', 'Mobile App'],
@@ -8,7 +8,6 @@ const footerLinks = {
   Legal: ['Privacy Policy', 'Terms of Service', 'Data Usage', 'Cookie Policy'],
 }
 
-// SVG social icons (avoids lucide-react version issues)
 const SocialIcons = [
   {
     label: 'X (Twitter)',
