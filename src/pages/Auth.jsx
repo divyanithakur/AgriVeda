@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Leaf, ArrowRight, Mail, Lock, User, MapPin, Loader2 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { collection, addDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import toast from 'react-hot-toast'
@@ -19,14 +19,13 @@ export default function Auth() {
     const data = Object.fromEntries(formData.entries())
 
     try {
-      // Store to Firebase Firestore (collection: 'leads')
       await addDoc(collection(db, 'leads'), {
         ...data,
         type: isLogin ? 'login_attempt' : 'registration',
         timestamp: new Date()
       });
 
-      toast.success("Thank you! We'll contact you soon.", {
+      toast.success("Welcome to AgriVeda!", {
         style: { background: '#1A5C38', color: '#fff' }
       });
 
@@ -44,85 +43,118 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-cream relative flex items-center justify-center overflow-hidden p-6">
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-green/5 rounded-full blur-[120px]" />
+    <div className="min-h-screen flex items-stretch bg-white scroll-smooth overflow-hidden">
       
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-md"
-      >
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-primary-green flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-green/20">
-            <Leaf className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl font-semibold text-dark-text font-display mb-2">
-            {isLogin ? 'Welcome Back' : 'Join AgriVeda'}
-          </h2>
-          <p className="text-dark-text/50 text-sm">
-            {isLogin ? 'Sign in to access your farm intelligence dashboard.' : 'Start your sustainable farming journey today.'}
-          </p>
+      {/* Left side: Hero Image */}
+      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800&q=85" 
+          alt="Farmer at sunrise" 
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-primary-green/90 to-primary-green/20" />
+        <div className="absolute bottom-20 left-20 right-20 z-10">
+           <Link to="/" className="flex items-center gap-3 mb-10 group">
+             <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-lg transition-transform group-hover:rotate-12">
+                <Leaf className="w-5 h-5 text-primary-green" />
+             </div>
+             <span className="text-2xl font-black text-white tracking-tight">AgriVeda</span>
+           </Link>
+           <h1 className="text-5xl font-black text-white leading-tight mb-6 font-display">
+             Digitizing the roots of<br/>
+             <span className="text-amber">Indian agriculture</span>
+           </h1>
+           <p className="text-white/70 text-lg font-medium max-w-md">
+             Join 10,000+ farmers across 18 states maximizing their yield and carbon income.
+           </p>
+        </div>
+      </div>
+
+      {/* Right side: Login form */}
+      <div className="flex-1 flex flex-col justify-center px-10 md:px-20 lg:px-24 bg-white relative">
+        <div className="absolute top-10 right-10 lg:hidden">
+          <Link to="/" className="flex items-center gap-2 group">
+             <div className="w-8 h-8 rounded-xl bg-primary-green flex items-center justify-center">
+                <Leaf className="w-4 h-4 text-white" />
+             </div>
+             <span className="text-lg font-black text-dark-text tracking-tight">AgriVeda</span>
+           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 space-y-5 rounded-2xl border border-dark-text/5 shadow-xl relative z-10">
-          {!isLogin && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-5">
-              <div>
-                <label className="block text-xs font-semibold text-dark-text/50 mb-1.5 uppercase tracking-wider">Full Name</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/40" />
-                  <input name="fullName" type="text" className="w-full bg-green-bg border border-dark-text/10 rounded-xl py-3 pl-10 pr-4 text-dark-text placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-colors" placeholder="Ramesh Kumar" required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-dark-text/50 mb-1.5 uppercase tracking-wider">State / District</label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/40" />
-                  <input name="location" type="text" className="w-full bg-green-bg border border-dark-text/10 rounded-xl py-3 pl-10 pr-4 text-dark-text placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-colors" placeholder="Maharashtra" required />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          <div>
-            <label className="block text-xs font-semibold text-dark-text/50 mb-1.5 uppercase tracking-wider">Email or Phone</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/40" />
-              <input name="contact" type="text" className="w-full bg-green-bg border border-dark-text/10 rounded-xl py-3 pl-10 pr-4 text-dark-text placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-colors" placeholder="farmer@example.com" required />
-            </div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md"
+        >
+          <div className="mb-10">
+            <h2 className="text-4xl font-black text-dark-text font-display mb-3 tracking-tight">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h2>
+            <p className="text-dark-text/40 text-sm font-medium">
+              {isLogin ? 'Sign in to access your farm intelligence.' : 'Start your sustainable farming journey today.'}
+            </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-dark-text/50 mb-1.5 uppercase tracking-wider">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/40" />
-              <input name="password" type="password" className="w-full bg-green-bg border border-dark-text/10 rounded-xl py-3 pl-10 pr-4 text-dark-text placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-colors" placeholder="••••••••" required />
-            </div>
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full cta-button py-3.5 rounded-xl flex items-center justify-center gap-2 group mt-6 disabled:opacity-70"
-          >
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                {isLogin ? 'Sign In to Dashboard' : 'Create Account'}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {!isLogin && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-5">
+                <div>
+                  <label className="block text-[10px] font-black text-dark-text/40 mb-2 uppercase tracking-widest">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/20" />
+                    <input name="fullName" type="text" className="w-full bg-green-bg/30 border border-dark-text/5 rounded-2xl py-4 pl-12 pr-4 text-dark-text font-semibold placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-all shadow-sm" placeholder="Ramesh Kumar" required />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-dark-text/40 mb-2 uppercase tracking-widest">District/State</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/20" />
+                    <input name="location" type="text" className="w-full bg-green-bg/30 border border-dark-text/5 rounded-2xl py-4 pl-12 pr-4 text-dark-text font-semibold placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-all shadow-sm" placeholder="Nagpur" required />
+                  </div>
+                </div>
+              </motion.div>
             )}
-          </button>
 
-          <div className="text-center mt-6">
-            <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-dark-text/50 text-sm hover:text-primary-green transition-colors font-medium">
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            <div>
+              <label className="block text-[10px] font-black text-dark-text/40 mb-2 uppercase tracking-widest">Email or Phone</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/20" />
+                <input name="contact" type="text" className="w-full bg-green-bg/30 border border-dark-text/5 rounded-2xl py-4 pl-12 pr-4 text-dark-text font-semibold placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-all shadow-sm" placeholder="farmer@agriveda.io" required />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-dark-text/40 mb-2 uppercase tracking-widest">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-text/20" />
+                <input name="password" type="password" className="w-full bg-green-bg/30 border border-dark-text/5 rounded-2xl py-4 pl-12 pr-4 text-dark-text font-semibold placeholder:text-dark-text/20 focus:outline-none focus:border-primary-green/50 transition-all shadow-sm" placeholder="••••••••" required />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-terracotta hover:bg-accent-dark text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 group mt-10 transition-all shadow-lg shadow-terracotta/20 hover:-translate-y-1 disabled:opacity-70"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  {isLogin ? 'Sign In' : 'Create Account'}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
-          </div>
-        </form>
-      </motion.div>
+
+            <div className="text-center mt-10">
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-dark-text text-sm hover:text-primary-green transition-all font-black border-b-2 border-dark-text/10 hover:border-primary-green/40">
+                {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </div>
     </div>
   )
 }

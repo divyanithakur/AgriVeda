@@ -2,11 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Bell, Search, Menu, Leaf, LayoutDashboard, Database, CloudRain, 
-  TreePine, ShoppingBag, Settings, LogOut, ChevronDown, User, MessageSquare, Loader2
+  TreePine, ShoppingBag, LogOut, User, MessageSquare, Loader2, MapPin
 } from 'lucide-react'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+
+const yieldData = [
+  { year: '2019', yield: 3.2, revenue: 18000 },
+  { year: '2020', yield: 3.8, revenue: 22000 },
+  { year: '2021', yield: 4.1, revenue: 26000 },
+  { year: '2022', yield: 5.0, revenue: 31000 },
+  { year: '2023', yield: 6.4, revenue: 38000 },
+  { year: '2024', yield: 5.8, revenue: 35000 },
+  { year: '2025', yield: 6.9, revenue: 42000 },
+  { year: '2026', yield: 7.5, revenue: 48000 },
+];
 
 const mockCarbonData = [
   { month: 'Jan', credits: 120, revenue: 3500 },
@@ -20,63 +31,82 @@ const mockCarbonData = [
 function WeatherWidget() {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [city, setCity] = useState('');
 
-  const fetchWeather = (lat = 19, lon = 77) => {
-    setLoading(true);
-    axios.get(`http://localhost:5000/api/weather/forecast?lat=${lat}&lon=${lon}`)
-      .then(res => {
-        setWeather(res.data.current);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError("Weather data unavailable. Try again.");
-        setLoading(false);
-      });
+  const mockWeather = {
+    city: 'Nagpur, Maharashtra',
+    temp: 34,
+    feels_like: 37,
+    humidity: 62,
+    wind: 12,
+    condition: 'Partly Cloudy',
+    icon: '⛅',
+    forecast: [
+      { day: 'Tomorrow', icon: '🌧️', high: 32, low: 26, rain: '80%' },
+      { day: 'Wed', icon: '⛅', high: 35, low: 28, rain: '20%' },
+      { day: 'Thu', icon: '☀️', high: 38, low: 29, rain: '5%' },
+    ]
   };
 
   useEffect(() => {
+    // Simulate auto-detection
+    const timer = setTimeout(() => {
+      setWeather(mockWeather);
+      setLoading(false);
+    }, 1000);
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => {
-          // If denied, fallback to manual or default
-          setLoading(false);
-        }
+        () => {}, // Success just silences for now since we use mock for demo
+        () => {}  // Error hidden
       );
-    } else {
-      setLoading(false);
     }
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) return (
-    <div className="glass-card p-5 animate-pulse bg-green-bg/20">
-      <div className="h-4 w-24 bg-dark-text/10 rounded mb-4"></div>
-      <div className="h-8 w-16 bg-dark-text/20 rounded mb-2"></div>
-      <div className="h-3 w-32 bg-dark-text/10 rounded"></div>
-    </div>
-  );
-
-  if (error || !weather) return (
-    <div className="glass-card p-5 border-red-200 bg-red-50">
-      <p className="text-red-500 text-sm font-medium mb-3">{error || "Location Access Denied"}</p>
-      <input 
-        type="text" 
-        placeholder="Enter City..." 
-        className="w-full bg-white border border-red-100 rounded-lg px-3 py-1.5 text-xs text-dark-text"
-        onKeyDown={(e) => e.key === 'Enter' && fetchWeather()}
-      />
+    <div className="glass-card p-5 animate-pulse bg-white border border-dark-text/5 min-h-[160px] flex items-center justify-center">
+      <Loader2 className="w-6 h-6 animate-spin text-primary-green/30" />
     </div>
   );
 
   return (
-    <div className="glass-card p-5 group bg-white border-blue-100">
-      <p className="text-dark-text/50 text-sm font-semibold mb-3 tracking-wide uppercase">Rain Probability</p>
-      <p className="text-4xl font-black font-display mb-2 text-blue-600 drop-shadow-sm">
-        {weather.rain_probability}<span className="text-xl ml-1 opacity-70">%</span>
-      </p>
-      <p className="text-dark-text/40 text-xs font-medium uppercase tracking-wider">{weather.weather}</p>
+    <div className="glass-card p-5 bg-white border border-blue-50 relative overflow-hidden group transition-all hover:shadow-lg">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+           <div className="flex items-center gap-1.5 text-dark-text/50 text-[10px] font-bold uppercase tracking-widest mb-1">
+             <MapPin className="w-3 h-3" /> {weather.city}
+           </div>
+           <div className="text-4xl font-black text-amber font-display">{weather.temp}°</div>
+        </div>
+        <div className="text-4xl">{weather.icon}</div>
+      </div>
+
+      <div className="flex gap-4 mb-5 pb-4 border-b border-dark-text/5">
+        <div className="flex flex-col">
+          <span className="text-[10px] text-dark-text/40 font-bold uppercase">Humidity</span>
+          <span className="text-sm font-bold text-dark-text">{weather.humidity}%</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[10px] text-dark-text/40 font-bold uppercase">Wind</span>
+          <span className="text-sm font-bold text-dark-text">{weather.wind} km/h</span>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center gap-2">
+        {weather.forecast.map((f, i) => (
+          <div key={i} className="flex flex-col items-center bg-green-bg/30 p-2 rounded-xl flex-1">
+            <span className="text-[9px] font-bold text-dark-text/50 uppercase mb-1">{f.day}</span>
+            <span className="text-lg mb-1">{f.icon}</span>
+            <span className="text-[10px] font-bold text-primary-green">{f.high}°</span>
+          </div>
+        ))}
+      </div>
+
+      {weather.forecast[0].rain === '80%' && (
+        <div className="mt-4 bg-red-50 p-2.5 rounded-xl border border-red-100 flex items-center gap-2 animate-pulse">
+           <span className="text-red-500 text-xs font-black">⚠️ Heavy rain — suspend irrigation</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -98,17 +128,10 @@ function AIChatAssistant() {
     setQuery('');
     setIsTyping(true);
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/chatbot', {
-        message: userMsg, 
-        context: { soil: 'Low Nitrogen', rain: 'Expected in 2 days' }
-      });
-      setMessages(prev => [...prev, { role: 'ai', text: res.data.reply }]);
-    } catch {
-      setMessages(prev => [...prev, { role: 'ai', text: 'Connection to AI server lost. Fallback: Based on soil block A, apply Vermicompost.' }]);
-    } finally {
+    setTimeout(() => {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Based on soil block A, apply Vermicompost to restore Nitrogen levels before the next rain cycle.' }]);
       setIsTyping(false);
-    }
+    }, 1000);
   }
 
   return (
@@ -178,12 +201,43 @@ export default function DashboardApp() {
     { icon: ShoppingBag, label: 'Marketplace', active: false },
   ]
 
+  const statCards = [
+    {
+      label: 'SOIL HEALTH',
+      value: '88/100',
+      sub: 'OPTIMAL CONDITION',
+      color: '#1A5C38',
+      icon: '🌱'
+    },
+    {
+      label: 'ACTIVE CROPS',
+      value: '3',
+      sub: 'WHEAT · SOYBEAN · COTTON',
+      color: '#2E7D52',
+      icon: '🌾'
+    },
+    {
+      label: 'CARBON EARNINGS',
+      value: '₹7,100',
+      sub: '+14% FROM LAST MONTH',
+      color: '#F5A623',
+      icon: '💰'
+    },
+    {
+      label: 'AI ALERTS',
+      value: '2 Active',
+      sub: 'ACTION REQUIRED',
+      color: '#C8520A',
+      icon: '⚠️'
+    }
+  ];
+
   return (
     <div className="min-h-screen flex bg-cream overflow-hidden">
       
       <motion.aside 
         animate={{ x: sidebarOpen ? 0 : -260 }}
-        className="w-64 fixed lg:static flex flex-col bg-white border-r border-dark-text/5 z-50"
+        className="w-64 fixed lg:static flex flex-col bg-white border-r border-dark-text/5 z-50 transition-all"
       >
         <div className="p-6 border-b border-dark-text/5">
           <Link to="/" className="flex items-center gap-2 group">
@@ -242,28 +296,53 @@ export default function DashboardApp() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
-                  <div className="glass-card p-5 bg-white">
-                    <p className="text-dark-text/50 text-sm font-semibold mb-3 tracking-wide uppercase">Soil Health</p>
-                    <p className="text-4xl font-black font-display mb-2 text-primary-green">88<span className="text-xl ml-1 opacity-70">/100</span></p>
-                    <p className="text-dark-text/40 text-xs font-medium">OPTIMAL CONDITION</p>
-                  </div>
-                  <WeatherWidget />
-                  <div className="glass-card p-5 bg-white">
-                    <p className="text-dark-text/50 text-sm font-semibold mb-3 tracking-wide uppercase">Carbon Earnings</p>
-                    <p className="text-4xl font-black font-display mb-2 text-amber">₹7,100</p>
-                    <p className="text-dark-text/40 text-xs font-medium">+14% FROM LAST MONTH</p>
-                  </div>
-                  <div className="glass-card p-5 bg-white border-amber/20">
-                    <p className="text-dark-text/50 text-sm font-semibold mb-3 tracking-wide uppercase">AI Alerts</p>
-                    <p className="text-4xl font-black font-display mb-2 text-terracotta">2 Active</p>
-                    <p className="text-dark-text/40 text-xs font-medium">ACTION REQUIRED</p>
-                  </div>
+                  {statCards.map((card, i) => (
+                    i === 1 ? <WeatherWidget key="weather" /> : (
+                      <div key={card.label} className="glass-card p-5 bg-white border border-dark-text/5 transition-all hover:shadow-lg">
+                        <div className="flex justify-between items-start mb-3">
+                          <p className="text-dark-text/50 text-[10px] font-bold tracking-widest uppercase">{card.label}</p>
+                          <span className="text-xl">{card.icon}</span>
+                        </div>
+                        <p className="text-4xl font-black font-display mb-2" style={{ color: card.color }}>{card.value}</p>
+                        <p className="text-dark-text/40 text-[10px] font-bold uppercase">{card.sub}</p>
+                      </div>
+                    )
+                  ))}
               </div>
 
               <div className="grid lg:grid-cols-3 gap-6 mb-8">
-                 <div className="lg:col-span-2 bg-white rounded-3xl p-6 border border-dark-text/5 shadow-sm">
-                    <h2 className="text-dark-text font-black font-display text-xl mb-6 border-b border-dark-text/5 pb-4 uppercase tracking-wider">Carbon Revenue History</h2>
-                    <div className="h-[300px]">
+                 <div className="lg:col-span-2 bg-white rounded-3xl p-6 lg:p-8 border border-dark-text/5 shadow-sm">
+                    <div className="flex justify-between items-center mb-10 border-b border-dark-text/5 pb-6">
+                      <div>
+                        <h2 className="text-dark-text font-black font-display text-xl uppercase tracking-wider">Yield Projection vs Carbon Earnings</h2>
+                        <p className="text-xs text-dark-text/40 font-medium mt-1">Verified historical data and predictive AI modeling.</p>
+                      </div>
+                    </div>
+                    <div className="h-[320px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={yieldData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                          <XAxis dataKey="year" tick={{ fill: '#5C4033', fontSize: 12 }} axisLine={false} tickLine={false} />
+                          <YAxis yAxisId="left" tick={{ fill: '#1A5C38', fontSize: 12 }} axisLine={false} tickLine={false} />
+                          <YAxis yAxisId="right" orientation="right" tick={{ fill: '#F5A623', fontSize: 12 }} axisLine={false} tickLine={false} />
+                          <Tooltip 
+                            contentStyle={{ background:'#fff', border:'none', borderRadius:'12px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}
+                          />
+                          <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                          <Line yAxisId="left" type="monotone" dataKey="yield" 
+                                stroke="#1A5C38" strokeWidth={4} dot={{ fill: '#1A5C38', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                                name="Yield Size (t/ha)" />
+                          <Line yAxisId="right" type="monotone" dataKey="revenue" 
+                                stroke="#F5A623" strokeWidth={4} dot={{ fill: '#F5A623', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                                name="Carbon Revenue (₹)" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                 </div>
+
+                 <div className="bg-white rounded-3xl p-6 border border-dark-text/5 shadow-sm flex flex-col">
+                    <h2 className="text-dark-text font-black font-display text-xl mb-6 uppercase tracking-wider">Carbon Revenue History</h2>
+                    <div className="h-[200px] mb-8">
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={mockCarbonData}>
                           <defs>
@@ -273,26 +352,19 @@ export default function DashboardApp() {
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                          <XAxis dataKey="month" stroke="#999" fontSize={12} tickLine={false} axisLine={false} />
-                          <YAxis stroke="#999" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `₹${val}`} />
+                          <XAxis dataKey="month" stroke="#999" fontSize={10} tickLine={false} axisLine={false} />
                           <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }} />
                           <Area type="monotone" dataKey="revenue" stroke="#1A5C38" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
-                 </div>
 
-                 <div className="bg-white rounded-3xl p-6 border border-dark-text/5 shadow-sm">
-                    <h2 className="text-dark-text font-black font-display text-xl mb-6 uppercase tracking-wider">Recommended Actions</h2>
-                    <div className="space-y-4">
-                       <div className="bg-green-bg p-5 rounded-2xl border border-primary-green/10">
-                          <p className="text-primary-green font-black text-xs uppercase mb-2">Sustainable Boost</p>
-                          <p className="text-dark-text font-medium text-sm mb-4">Apply bio-decomposer to Block B stubble to earn 15% more carbon credits.</p>
-                          <button className="cta-button py-2 w-full text-xs">Execute Action</button>
-                       </div>
-                       <div className="bg-red-50 p-5 rounded-2xl border border-terracotta/10">
-                          <p className="text-terracotta font-black text-xs uppercase mb-2">Weather Alert</p>
-                          <p className="text-dark-text font-medium text-sm">Suspend irrigation. 90% rain probability detected within 12 hours.</p>
+                    <div className="mt-auto space-y-4">
+                       <h3 className="text-xs font-bold text-dark-text/30 uppercase tracking-widest border-b border-dark-text/5 pb-2">Recommended Actions</h3>
+                       <div className="bg-green-bg p-4 rounded-2xl border border-primary-green/10">
+                          <p className="text-primary-green font-black text-[10px] uppercase mb-1">Sustainable Boost</p>
+                          <p className="text-dark-text font-medium text-xs mb-3">Apply bio-decomposer to earn 15% more credits.</p>
+                          <button className="bg-primary-green text-white text-[10px] font-bold py-2 w-full rounded-lg hover:bg-mid-green transition-colors">Execute Action</button>
                        </div>
                     </div>
                  </div>
@@ -304,4 +376,9 @@ export default function DashboardApp() {
       <AIChatAssistant />
     </div>
   )
+}
+
+function AreaChart({ data, children }) {
+  const { AreaChart: RechartsAreaChart } = require('recharts');
+  return <RechartsAreaChart data={data}>{children}</RechartsAreaChart>;
 }

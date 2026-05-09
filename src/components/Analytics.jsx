@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { Award, Star } from 'lucide-react'
 
 const testimonials = [
@@ -28,19 +27,42 @@ export default function Analytics() {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          
+          if (entry.target.classList.contains('stats-grid')) {
+             entry.target.querySelectorAll('.ani-count').forEach(el => {
+                const target = parseInt(el.getAttribute('data-target'));
+                const prefix = el.getAttribute('data-prefix') || '';
+                const suffix = el.getAttribute('data-suffix') || '';
+                animateValue(el, 0, target, 2000, prefix, suffix);
+             });
+          }
         }
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.fade-slide-up').forEach((el) => observer.observe(el));
+    function animateValue(obj, start, end, duration, prefix, suffix) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const currentVal = Math.floor(progress * (end - start) + start);
+        obj.innerHTML = prefix + currentVal.toLocaleString('en-IN') + suffix;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('.fade-slide-up, .stats-grid').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section id="analytics" className="py-24 relative bg-cream border-t border-dark-text/5">
+    <section id="analytics" className="py-24 relative bg-cream border-t border-dark-text/5 overflow-hidden">
       <div ref={ref} className="max-w-7xl mx-auto px-6 relative z-10 section-padding">
         
-        <div className="text-center max-w-3xl mx-auto mb-20 fade-slide-up">
+        <div className="text-center max-w-3xl mx-auto mb-16 fade-slide-up">
           <Award className="w-10 h-10 text-primary-green mx-auto mb-6" />
           <h2 className="text-4xl md:text-5xl font-black font-display text-dark-text leading-tight mb-6">
             Supported by Science.<br/>
@@ -49,6 +71,26 @@ export default function Analytics() {
           <p className="text-dark-text/60 text-xl font-light">
             Real impact across 18 states. We are building the most trusted agriculture platform in India.
           </p>
+        </div>
+
+        {/* Animated Stat Counters */}
+        <div className="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-8 mb-24 opacity-0 translate-y-10 transition-all duration-700">
+           <div className="bg-white p-8 rounded-2xl border border-dark-text/5 text-center shadow-sm">
+              <div className="ani-count text-4xl font-black text-primary-green font-display mb-2" data-target="10000" data-suffix="+">0</div>
+              <p className="text-xs font-bold text-dark-text/40 uppercase tracking-widest">Farmers Impacted</p>
+           </div>
+           <div className="bg-white p-8 rounded-2xl border border-dark-text/5 text-center shadow-sm">
+              <div className="ani-count text-4xl font-black text-primary-green font-display mb-2" data-target="18" data-suffix="">0</div>
+              <p className="text-xs font-bold text-dark-text/40 uppercase tracking-widest">States Active</p>
+           </div>
+           <div className="bg-white p-8 rounded-2xl border border-dark-text/5 text-center shadow-sm">
+              <div className="ani-count text-4xl font-black text-primary-green font-display mb-2" data-target="40" data-suffix="%">0</div>
+              <p className="text-xs font-bold text-dark-text/40 uppercase tracking-widest">Yield Increase</p>
+           </div>
+           <div className="bg-white p-8 rounded-2xl border border-dark-text/5 text-center shadow-sm">
+              <div className="ani-count text-4xl font-black text-primary-green font-display mb-2" data-target="12000" data-prefix="₹">0</div>
+              <p className="text-xs font-bold text-dark-text/40 uppercase tracking-widest">Avg Carbon Income</p>
+           </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">

@@ -36,14 +36,15 @@ export default function Hero() {
         loop 
         playsInline 
         preload="metadata"
-        poster="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=1400&q=70"
+        poster="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1400&q=80"
       >
         <source src="https://videos.pexels.com/video-files/5987267/5987267-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
         <source src="https://videos.pexels.com/video-files/4117442/4117442-hd_1280_720_25fps.mp4" type="video/mp4"/>
+        <source src="https://videos.pexels.com/video-files/3997264/3997264-hd_1280_720_25fps.mp4" type="video/mp4"/>
       </video>
 
       <div className="hero-overlay absolute inset-0 z-[1]" style={{
-        background: 'linear-gradient(105deg, rgba(5,18,10,0.90) 0%, rgba(5,18,10,0.72) 45%, rgba(5,18,10,0.30) 100%)'
+        background: 'linear-gradient(100deg, rgba(4,15,8,0.92) 0%, rgba(4,15,8,0.75) 40%, rgba(4,15,8,0.20) 100%)'
       }}></div>
 
       <div className="floating-leaves absolute inset-0 pointer-events-none overflow-hidden z-[2]" aria-hidden="true">
@@ -75,7 +76,7 @@ export default function Hero() {
             <span className="text-amber">AI-powered farming</span>
           </h1>
 
-          <p className="hero-sub text-[clamp(15px,2vw,18px)] text-white/78 leading-[1.78] mb-9 max-w-[520px] font-medium">
+          <p className="hero-sub text-[clamp(15px,2vw,18px)] text-white/85 leading-[1.75] mb-9 max-w-[520px] font-medium relative z-[5]" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
             Monitor soil health · Get biofertilizer recommendations · Track hyperlocal weather · 
             Earn carbon credits. Everything a modern Indian farmer needs — starting at just 
             <strong className="text-amber ml-1">₹500/month</strong>.
