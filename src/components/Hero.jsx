@@ -1,20 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, Play, CheckCircle2, Leaf, CloudRain, TrendingUp } from 'lucide-react'
-import { Link } from 'react-router-dom'
-
-function Widget({ children, className, delay = 0 }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`absolute bg-white/90 p-5 shadow-2xl backdrop-blur-3xl border border-primary-green/10 rounded-2xl ${className}`}
-    >
-      {children}
-    </motion.div>
-  )
-}
+import { motion, AnimatePresence } from 'framer-motion'
 
 function AnimatedCounter({ target, decimals = 0 }) {
   const [count, setCount] = useState(0);
@@ -29,7 +14,8 @@ function AnimatedCounter({ target, decimals = 0 }) {
         const animate = (currentTime) => {
           if (!startTime) startTime = currentTime;
           const progress = Math.min((currentTime - startTime) / duration, 1);
-          setCount(progress * target);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setCount(eased * target);
           if (progress < 1) window.requestAnimationFrame(animate);
         };
         window.requestAnimationFrame(animate);
@@ -41,157 +27,164 @@ function AnimatedCounter({ target, decimals = 0 }) {
     return () => observer.disconnect();
   }, [target]);
 
-  return <span ref={ref}>{count.toFixed(decimals)}</span>;
+  return <span ref={ref}>{count.toFixed(decimals).toLocaleString('en-IN')}</span>;
 }
 
 export default function Hero() {
+  const videoRef = useRef(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && videoRef.current) {
+      videoRef.current.pause();
+      setVideoLoaded(true);
+    }
+  }, []);
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center pt-32 pb-24 overflow-hidden bg-white">
-      {/* Floating Leaves */}
-      <div className="floating-leaves absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <section className="hero-section relative min-h-screen flex flex-col justify-center overflow-hidden bg-[#0d2e18]" id="home">
+      
+      {/* VIDEO BACKGROUND */}
+      <video 
+        ref={videoRef}
+        className={`hero-video absolute inset-0 w-full h-full object-cover object-center z-0 transition-opacity duration-[1.2s] ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+        autoPlay 
+        muted 
+        loop 
+        playsInline
+        onLoadedData={handleVideoLoad}
+        onCanPlay={handleVideoLoad}
+        poster="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=1200&q=60"
+      >
+        <source src="https://videos.pexels.com/video-files/5987267/5987267-uhd_2560_1440_25fps.mp4" type="video/mp4" />
+        <source src="https://videos.pexels.com/video-files/4753926/4753926-hd_1280_720_30fps.mp4" type="video/mp4" />
+      </video>
+
+      {/* DARK OVERLAY */}
+      <div className="hero-overlay absolute inset-0 z-[1]" style={{
+        background: 'linear-gradient(to right, rgba(8, 24, 12, 0.88) 0%, rgba(8, 24, 12, 0.70) 50%, rgba(8, 24, 12, 0.35) 100%)'
+      }}></div>
+
+      {/* FLOATING LEAVES */}
+      <div className="floating-leaves absolute inset-0 pointer-events-none overflow-hidden z-[2]" aria-hidden="true">
         {[
-          { l: '8%', t: '20%', d: '8s', del: '0s', w: '28px', c: '#2E7D52', o: 0.25 },
-          { l: '15%', t: '60%', d: '11s', del: '2s', w: '20px', c: '#6BAE82', o: 0.2 },
-          { l: '80%', t: '15%', d: '9s', del: '1s', w: '34px', c: '#F5A623', o: 0.15 },
-          { l: '72%', t: '70%', d: '13s', del: '4s', w: '22px', c: '#2E7D52', o: 0.18 },
-          { l: '50%', t: '10%', d: '7s', del: '3s', w: '18px', c: '#6BAE82', o: 0.22 },
-          { l: '90%', t: '45%', d: '10s', del: '1.5s', w: '30px', c: '#1A5C38', o: 0.12 },
+          { l: '6%', t: '25%', d: '9s', del: '0s', w: '28px', c: '#6BAE82' },
+          { l: '14%', t: '55%', d: '12s', del: '2s', w: '18px', c: '#F5A623' },
+          { l: '78%', t: '18%', d: '8s', del: '1s', w: '32px', c: '#6BAE82' },
+          { l: '70%', t: '65%', d: '14s', del: '4s', w: '20px', c: '#2E7D52' },
+          { l: '48%', t: '12%', d: '7s', del: '3s', w: '16px', c: '#F5A623' },
+          { l: '88%', t: '42%', d: '11s', del: '2.5s', w: '26px', c: '#6BAE82' },
         ].map((leaf, i) => (
           <svg 
             key={i} 
-            className="leaf absolute animate-[floatLeaf_linear_infinite]" 
+            className="leaf absolute opacity-[0.22] animate-[floatLeaf_linear_infinite]" 
             style={{ 
               left: leaf.l, top: leaf.t, width: leaf.w, 
               animationDuration: leaf.d, animationDelay: leaf.del 
             }} 
-            viewBox="0 0 40 60" 
-            fill="none"
+            viewBox="0 0 40 60"
           >
-            <path d="M20 5 C35 5 38 25 20 55 C2 25 5 5 20 5Z" fill={leaf.c} opacity={leaf.o}/>
+            <path d="M20 5 C35 5 38 25 20 55 C2 25 5 5 20 5Z" fill={leaf.c}/>
           </svg>
         ))}
       </div>
 
       <style>{`
         @keyframes floatLeaf {
-          0%   { transform: translateY(0px)   rotate(0deg);   opacity: 0; }
-          10%  { opacity: 1; }
-          90%  { opacity: 1; }
-          100% { transform: translateY(-120px) rotate(25deg); opacity: 0; }
+          0%   { transform: translateY(0)     rotate(0deg);  opacity: 0; }
+          10%  { opacity: 0.22; }
+          90%  { opacity: 0.22; }
+          100% { transform: translateY(-100px) rotate(30deg); opacity: 0; }
         }
-        .hero-image-badge .badge-dot {
-          animation: pulse-dot 1.5s ease-in-out infinite;
-        }
-        @keyframes pulse-dot {
+        @keyframes pulseDot {
           0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.3); }
+          50% { opacity: 0.5; transform: scale(1.5); }
+        }
+        @keyframes scrollAnim {
+          0%   { transform: scaleY(0); transform-origin: top; }
+          50%  { transform: scaleY(1); transform-origin: top; }
+          51%  { transform: scaleY(1); transform-origin: bottom; }
+          100% { transform: scaleY(0); transform-origin: bottom; }
         }
       `}</style>
 
-      <div className="max-w-[1400px] mx-auto px-6 relative z-20 w-full">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+      {/* MAIN CONTENT */}
+      <div className="hero-inner container relative z-[3] px-6 py-32 max-w-[1200px] mx-auto w-full">
+        <div className="hero-text-col max-w-[620px]">
           
-          <div className="max-w-2xl relative z-30">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-2 bg-green-bg border border-light-green/20 text-primary-green font-semibold text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8"
-            >
-              <span className="relative flex h-2 w-2 mr-1">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-green opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-green"></span>
-              </span>
-              AgriTech Ecosystem
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-black leading-[1.05] tracking-tight mb-8 font-display text-dark-text"
-              style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)' }}
-            >
-              Transform Soil Intelligence Into{' '}
-              <span className="text-primary-green font-black"> Prosperity.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-lg md:text-xl text-dark-text/80 leading-relaxed mb-12 font-sans font-medium max-w-xl"
-            >
-              AI-powered soil insights, hyper-local weather intelligence, biofertilizer guidance, and verified carbon credit tracking for the modern Indian farmer.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-wrap items-center gap-6"
-            >
-              <Link to="/login" className="cta-button shadow-2xl shadow-terracotta/20 group text-lg py-4 px-10">
-                Start Free Trial
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1.5 transition-transform" />
-              </Link>
-              <button className="bg-white hover:bg-green-bg text-primary-green border border-primary-green/20 font-bold text-lg py-4 px-10 rounded-lg transition-all duration-300 flex items-center gap-3 hover:-translate-y-1">
-                <Play className="w-5 h-5 fill-current" />
-                Watch Demo
-              </button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.5, delay: 0.8 }}
-              className="mt-16 flex items-center gap-10"
-            >
-              <div className="stats-section">
-                <p className="text-4xl font-black text-dark-text font-display flex items-center gap-1"><AnimatedCounter target={2.4} decimals={1} /><span className="text-xl text-dark-text/50 font-normal">Lakh+</span></p>
-                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-widest font-bold">Farmers Trusted</p>
-              </div>
-              <div className="w-px h-12 bg-primary-green/20" />
-              <div className="stats-section">
-                <p className="text-4xl font-black text-primary-green font-display">₹<AnimatedCounter target={620} decimals={0} /><span className="text-xl text-primary-green/60 font-normal">Cr</span></p>
-                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-widest font-bold">Verified Income</p>
-              </div>
-            </motion.div>
+          {/* Live badge */}
+          <div className="live-badge inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[40px] px-[18px] py-2 mb-6 text-[12px] font-bold text-white/90 uppercase tracking-wider">
+            <span className="live-dot w-2 h-2 bg-green-500 rounded-full animate-[pulseDot_1.5s_ease-in-out_infinite]"></span>
+            <span>LIVE — 10,247 farmers active now</span>
           </div>
 
-          {/* Right Visual - Upgraded with Farmer Image */}
-          <div className="relative hidden lg:block z-20">
-            <div className="hero-image-wrap relative rounded-[32px] overflow-hidden shadow-[0_32px_80px_rgba(26,92,56,0.3)] fade-slide-up bg-cream">
-              <img 
-                src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800&q=85" 
-                alt="Indian farmer using AgriVeda on mobile in field"
-                className="w-full h-[520px] object-cover object-center block hover:scale-105 transition-transform duration-700"
-              />
-              <div className="hero-image-badge absolute bottom-6 left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl flex items-center gap-3 border border-primary-green/10">
-                <span className="badge-dot w-2.5 h-2.5 bg-green-500 rounded-full"></span>
-                <span className="text-sm font-bold text-primary-green tracking-wide">Live soil analysis — Nashik, MH</span>
-              </div>
-            </div>
+          {/* Headline */}
+          <h1 className="hero-h1 text-[clamp(2.5rem,5.5vw,3.6rem)] font-extrabold text-white leading-[1.15] mb-5 tracking-tight shadow-sm">
+            Ancient wisdom meets<br/>
+            <span className="text-[#F5A623]">AI-powered farming</span>
+          </h1>
 
-            {/* Floating Overlay Widget */}
-            <Widget delay={0.8} className="w-[300px] -left-12 bottom-12 z-40 bg-white/95">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <p className="text-[10px] text-dark-text/50 uppercase tracking-widest font-bold mb-1">Carbon Wallet</p>
-                  <p className="text-3xl font-black text-dark-text tracking-tight flex items-center gap-2">
-                    ₹4,250 
-                    <span className="text-xs font-bold text-primary-green bg-green-bg px-2.5 py-1 rounded-full flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" /> +14%
-                    </span>
-                  </p>
-                </div>
+          {/* Subheadline */}
+          <p className="hero-sub text-[clamp(15px,2vw,18px)] text-white/80 leading-[1.75] mb-9 max-w-[500px] font-medium">
+            Monitor soil health, get biofertilizer recommendations, track weather — 
+            and earn carbon credits. All in one app, starting at just ₹500/month.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="hero-btns flex gap-3.5 flex-wrap mb-6">
+            <a href="#pricing" className="btn-primary-hero bg-[#C8520A] text-white px-8 py-3.5 rounded-lg text-[16px] font-bold transition-all hover:bg-[#a03e06] hover:-translate-y-0.5 shadow-lg">
+              🌱 Start Free Trial
+            </a>
+            <a href="#demo" className="btn-secondary-hero bg-white/10 backdrop-blur-md text-white px-8 py-3.5 rounded-lg text-[16px] font-semibold border border-white/25 transition-all hover:bg-white/20 hover:-translate-y-0.5">
+              ▶ Watch Demo
+            </a>
+          </div>
+
+          <p className="hero-trust text-[13px] text-white/50 mt-1">
+            Trusted by farmers in Maharashtra, Punjab, Karnataka, UP & 14 more states
+          </p>
+        </div>
+      </div>
+
+      {/* BOTTOM STATS BAR */}
+      <div className="hero-stats-bar relative z-[3] bg-[#08180c]/75 backdrop-blur-lg border-t border-white-[0.08]">
+        <div className="max-w-[900px] mx-auto px-6 py-5">
+          <div className="stats-inner flex items-center justify-center text-center">
+            <div className="stat-item flex-1 px-4">
+              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5 transition-transform hover:scale-110 cursor-default">
+                <AnimatedCounter target={10000} />+
               </div>
-            </Widget>
+              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Farmers</div>
+            </div>
+            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
+            <div className="stat-item flex-1 px-4">
+              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5"><AnimatedCounter target={18} /></div>
+              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">States covered</div>
+            </div>
+            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
+            <div className="stat-item flex-1 px-4">
+              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5"><AnimatedCounter target={40} />%</div>
+              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Yield Increase</div>
+            </div>
+            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
+            <div className="stat-item flex-1 px-4">
+              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5">₹<AnimatedCounter target={8000} /></div>
+              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Cost Saved</div>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div className="soil-wave"></div>
+
+      {/* SCROLL INDICATOR */}
+      <div className="scroll-indicator absolute bottom-20 right-10 z-[3] flex flex-col items-center gap-2 opacity-50 hidden md:flex" aria-hidden="true">
+        <div className="scroll-line w-[1px] h-12 bg-white/60 animate-[scrollAnim_2s_ease-in-out_infinite] origin-top"></div>
+        <span className="text-[9px] text-white uppercase tracking-widest [writing-mode:vertical-rl]">scroll</span>
+      </div>
+
     </section>
   )
 }
