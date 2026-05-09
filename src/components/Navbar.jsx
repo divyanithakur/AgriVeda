@@ -38,7 +38,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link
           to="/"
-          className="text-[1.25rem] font-black tracking-tight text-white flex items-center gap-2 group"
+          className="text-[1.25rem] font-black tracking-tight flex items-center gap-2 group transition-colors duration-300 logo-text text-white"
           style={{ fontFamily: 'Syne, sans-serif' }}
         >
           <span className="w-7 h-7 rounded-lg bg-amber flex items-center justify-center text-[#2C1A0E] text-xs font-black transition-transform duration-300 group-hover:rotate-12">
@@ -54,7 +54,7 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
-              className="relative text-sm font-semibold text-white/80 hover:text-white transition-colors duration-200 group py-1"
+              className="relative text-sm font-semibold text-white/80 hover:text-white transition-colors duration-300 group py-1 nav-link"
               style={{ fontFamily: 'DM Sans, sans-serif' }}
             >
               {link.label}
@@ -85,7 +85,7 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors"
+          className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors menu-btn text-white"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
