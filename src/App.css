@@ -285,3 +285,31 @@
 
 .animate-fade-in-scale { animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-slide-in-left { animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* ── Animated Stickers & Badges ── */
+.sticker {
+  @apply pointer-events-none z-50 select-none;
+  animation: stickerFloat 6s ease-in-out infinite;
+}
+
+@keyframes stickerFloat {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+.sticker-badge {
+  @apply bg-white border border-dark-text/5 shadow-xl rounded-2xl p-4 flex flex-col items-center justify-center gap-1;
+}
+
+.sticker-verified {
+  @apply absolute -top-4 -right-4 w-12 h-12 bg-primary-green text-white rounded-full flex items-center justify-center shadow-lg animate-pulse z-10;
+}
+
+.pulse-badge {
+  @apply relative;
+}
+
+.pulse-badge::before {
+  content: '';
+  @apply absolute -inset-1 bg-primary-green/20 rounded-full animate-pulse;
+}
