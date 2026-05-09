@@ -1,8 +1,10 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
+import Problem from '../components/Problem'
 import Features from '../components/Features'
 import DashboardPreview from '../components/Dashboard'
+import FarmerStories from '../components/FarmerStories'
 import Analytics from '../components/Analytics'
 import About from '../components/About'
 import Pricing from '../components/Pricing'
@@ -13,8 +15,10 @@ export default function Home() {
     <>
       <Navbar />
       <Hero />
+      <Problem />
       <Features />
       <DashboardPreview />
+      <FarmerStories />
       <Analytics />
       <About />
       <Pricing />

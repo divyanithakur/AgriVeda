@@ -1,17 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, CheckCircle2, Leaf, CloudRain, Droplets, Wind, TrendingUp } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle2, Leaf, CloudRain, TrendingUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-// Note: Framer motion is kept for the complex widget dashboard, but the main feature scroll applies CSS.
-function Widget({ children, className, delay = 0, style }) {
+function Widget({ children, className, delay = 0 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 1.2, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`absolute bg-white/90 p-5 shadow-[0_30px_60px_-15px_rgba(26,92,56,0.2)] backdrop-blur-3xl border border-primary-green/10 rounded-2xl ${className}`}
-      style={style}
+      className={`absolute bg-white/90 p-5 shadow-2xl backdrop-blur-3xl border border-primary-green/10 rounded-2xl ${className}`}
     >
       {children}
     </motion.div>
@@ -23,9 +21,8 @@ function AnimatedCounter({ target, decimals = 0 }) {
   const ref = useRef();
 
   useEffect(() => {
-    let start = 0;
-    const duration = 2000;
     let startTime = null;
+    const duration = 2000;
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -33,18 +30,14 @@ function AnimatedCounter({ target, decimals = 0 }) {
           if (!startTime) startTime = currentTime;
           const progress = Math.min((currentTime - startTime) / duration, 1);
           setCount(progress * target);
-          if (progress < 1) {
-            window.requestAnimationFrame(animate);
-          }
+          if (progress < 1) window.requestAnimationFrame(animate);
         };
         window.requestAnimationFrame(animate);
         observer.disconnect();
       }
     });
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
   }, [target]);
 
@@ -52,57 +45,58 @@ function AnimatedCounter({ target, decimals = 0 }) {
 }
 
 export default function Hero() {
-  const [leaves, setLeaves] = useState([]);
-
-  useEffect(() => {
-    // Generate 8 random leaves for floating animation
-    const newLeaves = Array.from({ length: 8 }).map((_, i) => ({
-      left: Math.random() * 100 + '%',
-      animationDuration: 6 + Math.random() * 6 + 's',
-      animationDelay: Math.random() * 5 + 's',
-      scale: 0.5 + Math.random() * 0.8
-    }));
-    setLeaves(newLeaves);
-  }, []);
-
   return (
     <section className="relative min-h-screen flex items-center pt-32 pb-24 overflow-hidden bg-white">
-      {/* Subtle Gradient Overlay */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03]" 
-        style={{ backgroundImage: 'linear-gradient(135deg, #1A5C38 0%, #2E7D52 50%, #6BAE82 100%)' }}
-      />
-      
       {/* Floating Leaves */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {leaves.map((leaf, i) => (
+      <div className="floating-leaves absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+        {[
+          { l: '8%', t: '20%', d: '8s', del: '0s', w: '28px', c: '#2E7D52', o: 0.25 },
+          { l: '15%', t: '60%', d: '11s', del: '2s', w: '20px', c: '#6BAE82', o: 0.2 },
+          { l: '80%', t: '15%', d: '9s', del: '1s', w: '34px', c: '#F5A623', o: 0.15 },
+          { l: '72%', t: '70%', d: '13s', del: '4s', w: '22px', c: '#2E7D52', o: 0.18 },
+          { l: '50%', t: '10%', d: '7s', del: '3s', w: '18px', c: '#6BAE82', o: 0.22 },
+          { l: '90%', t: '45%', d: '10s', del: '1.5s', w: '30px', c: '#1A5C38', o: 0.12 },
+        ].map((leaf, i) => (
           <svg 
             key={i} 
-            className="floating-leaf"
+            className="leaf absolute animate-[floatLeaf_linear_infinite]" 
             style={{ 
-              left: leaf.left, 
-              bottom: '-20px',
-              animationDuration: leaf.animationDuration,
-              animationDelay: leaf.animationDelay,
-              transform: `scale(${leaf.scale})`
+              left: leaf.l, top: leaf.t, width: leaf.w, 
+              animationDuration: leaf.d, animationDelay: leaf.del 
             }} 
-            width="24" height="24" viewBox="0 0 24 24"
+            viewBox="0 0 40 60" 
+            fill="none"
           >
-            <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+            <path d="M20 5 C35 5 38 25 20 55 C2 25 5 5 20 5Z" fill={leaf.c} opacity={leaf.o}/>
           </svg>
         ))}
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 relative z-20 w-full section-padding">
+      <style>{`
+        @keyframes floatLeaf {
+          0%   { transform: translateY(0px)   rotate(0deg);   opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateY(-120px) rotate(25deg); opacity: 0; }
+        }
+        .hero-image-badge .badge-dot {
+          animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.3); }
+        }
+      `}</style>
+
+      <div className="max-w-[1400px] mx-auto px-6 relative z-20 w-full">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           
-          {/* Left Text Block */}
           <div className="max-w-2xl relative z-30">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="inline-flex items-center gap-2 bg-green-bg border border-light-green/20 text-primary-green font-semibold text-xs tracking-[0.2em] uppercase px-5 py-2.5 rounded-full mb-8"
+              className="inline-flex items-center gap-2 bg-green-bg border border-light-green/20 text-primary-green font-semibold text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8"
             >
               <span className="relative flex h-2 w-2 mr-1">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-green opacity-75"></span>
@@ -115,20 +109,18 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="font-medium leading-[1.05] tracking-tight mb-8 font-display text-dark-text"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+              className="font-black leading-[1.05] tracking-tight mb-8 font-display text-dark-text"
+              style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)' }}
             >
               Transform Soil Intelligence Into{' '}
-              <span className="text-primary-green font-bold">
-                Prosperity.
-              </span>
+              <span className="text-primary-green font-black"> Prosperity.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-lg md:text-xl text-dark-text/80 leading-relaxed mb-12 font-sans font-light max-w-xl"
+              className="text-lg md:text-xl text-dark-text/80 leading-relaxed mb-12 font-sans font-medium max-w-xl"
             >
               AI-powered soil insights, hyper-local weather intelligence, biofertilizer guidance, and verified carbon credit tracking for the modern Indian farmer.
             </motion.p>
@@ -139,25 +131,14 @@ export default function Hero() {
               transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-wrap items-center gap-6"
             >
-              <Link to="/login" className="cta-button shadow-lg shadow-terracotta/20 group">
+              <Link to="/login" className="cta-button shadow-2xl shadow-terracotta/20 group text-lg py-4 px-10">
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1.5 transition-transform" />
               </Link>
-              <button className="bg-white hover:bg-green-bg text-primary-green border border-primary-green/20 font-semibold text-lg py-3.5 px-8 rounded-lg transition-all duration-300 flex items-center gap-3 hover:-translate-y-1">
+              <button className="bg-white hover:bg-green-bg text-primary-green border border-primary-green/20 font-bold text-lg py-4 px-10 rounded-lg transition-all duration-300 flex items-center gap-3 hover:-translate-y-1">
                 <Play className="w-5 h-5 fill-current" />
                 Watch Demo
               </button>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="mt-4"
-            >
-              <span className="inline-flex items-center gap-1.5 bg-amber/10 text-dark-text px-3 py-1 rounded-full text-sm font-semibold border border-amber/20 shadow-sm">
-                <CheckCircle2 className="w-4 h-4 text-amber" /> Trusted by 10,000+ farmers
-              </span>
             </motion.div>
 
             <motion.div
@@ -166,107 +147,50 @@ export default function Hero() {
               transition={{ duration: 1.5, delay: 0.8 }}
               className="mt-16 flex items-center gap-10"
             >
-              <div>
-                <p className="text-4xl font-bold text-dark-text font-display flex items-center gap-1"><AnimatedCounter target={2.4} decimals={1} /><span className="text-xl text-dark-text/50 font-normal">Lakh+</span></p>
-                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-[0.15em] font-semibold">Farmers Trusted</p>
+              <div className="stats-section">
+                <p className="text-4xl font-black text-dark-text font-display flex items-center gap-1"><AnimatedCounter target={2.4} decimals={1} /><span className="text-xl text-dark-text/50 font-normal">Lakh+</span></p>
+                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-widest font-bold">Farmers Trusted</p>
               </div>
               <div className="w-px h-12 bg-primary-green/20" />
-              <div>
-                <p className="text-4xl font-bold text-primary-green font-display">₹<AnimatedCounter target={620} decimals={0} /><span className="text-xl text-primary-green/60 font-normal">Cr</span></p>
-                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-[0.15em] font-semibold">Verified Income</p>
+              <div className="stats-section">
+                <p className="text-4xl font-black text-primary-green font-display">₹<AnimatedCounter target={620} decimals={0} /><span className="text-xl text-primary-green/60 font-normal">Cr</span></p>
+                <p className="text-xs text-dark-text/60 mt-2 uppercase tracking-widest font-bold">Verified Income</p>
               </div>
             </motion.div>
           </div>
 
-          {/* Right Visual Dashboard Mockup */}
-          <div className="relative h-[700px] hidden lg:block z-20">
-            {/* 1. Main Soil Dashboard */}
-            <Widget delay={0.4} className="w-[380px] right-2 top-[30%] z-30">
-              <div className="flex items-center justify-between mb-8 border-b border-dark-text/5 pb-4">
-                <div>
-                  <h3 className="text-dark-text font-semibold flex items-center gap-2 text-lg">
-                    <Leaf className="w-5 h-5 text-primary-green" />
-                    Soil Spectral Scan
-                  </h3>
-                  <p className="text-xs text-dark-text/50 mt-1">Live from Node A7 • Validated</p>
-                </div>
-                <div className="w-14 h-14 rounded-full border-[3px] border-primary-green bg-green-bg flex items-center justify-center">
-                  <span className="text-primary-green font-bold text-lg">92</span>
-                </div>
+          {/* Right Visual - Upgraded with Farmer Image */}
+          <div className="relative hidden lg:block z-20">
+            <div className="hero-image-wrap relative rounded-[32px] overflow-hidden shadow-[0_32px_80px_rgba(26,92,56,0.3)] fade-slide-up bg-cream">
+              <img 
+                src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800&q=85" 
+                alt="Indian farmer using AgriVeda on mobile in field"
+                className="w-full h-[520px] object-cover object-center block hover:scale-105 transition-transform duration-700"
+              />
+              <div className="hero-image-badge absolute bottom-6 left-6 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl flex items-center gap-3 border border-primary-green/10">
+                <span className="badge-dot w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                <span className="text-sm font-bold text-primary-green tracking-wide">Live soil analysis — Nashik, MH</span>
               </div>
-              
-              <div className="space-y-5">
-                {[
-                  { l: 'Nitrogen (N)', v: '85%', c: '#1A5C38' },
-                  { l: 'Phosphorus (P)', v: '70%', c: '#6BAE82' },
-                  { l: 'Potassium (K)', v: '90%', c: '#2E7D52' }
-                ].map((stat, i) => (
-                  <div key={i} className="group cursor-pointer">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-dark-text/70">{stat.l}</span>
-                      <span className="text-dark-text font-bold">{stat.v}</span>
-                    </div>
-                    <div className="h-2 bg-green-bg rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: stat.v }}
-                        transition={{ duration: 2, delay: 1 + (i*0.2), ease: 'easeOut' }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: stat.c }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-8 p-4 bg-green-bg border-l-2 border-primary-green rounded-r-xl">
-                <p className="text-dark-text text-sm font-medium flex items-start gap-2 leading-relaxed">
-                  <CheckCircle2 className="w-4 h-4 text-primary-green shrink-0 mt-0.5" /> 
-                  Optimal for early-stage Wheat sowing. No synthetic urea required.
-                </p>
-              </div>
-            </Widget>
+            </div>
 
-            {/* 2. Weather Intelligence Card */}
-            <Widget delay={0.6} className="w-[280px] left-[-10%] top-[10%] z-20">
-              <p className="text-[10px] text-dark-text/50 uppercase tracking-widest font-bold mb-4">Hyper-Local Forecast</p>
-              <div className="flex items-end gap-4 mb-5">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center border border-blue-100">
-                  <CloudRain className="w-8 h-8 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-5xl font-light text-dark-text font-display">24°</p>
-                  <p className="text-xs text-blue-600 font-semibold mt-1">90% Rain at 4 PM</p>
-                </div>
-              </div>
-              <div className="bg-white border border-dark-text/5 rounded-xl p-3 shadow-sm">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-dark-text/60">Auto-Irrigation</span>
-                  <span className="text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">PAUSED</span>
-                </div>
-              </div>
-            </Widget>
-
-            {/* 3. Carbon Earnings Visual */}
-            <Widget delay={0.8} className="w-[300px] left-[5%] bottom-[5%] z-40">
+            {/* Floating Overlay Widget */}
+            <Widget delay={0.8} className="w-[300px] -left-12 bottom-12 z-40 bg-white/95">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <p className="text-[10px] text-dark-text/50 uppercase tracking-[0.2em] font-bold mb-1">Carbon Wallet</p>
-                  <p className="text-3xl font-bold text-dark-text tracking-tight flex items-center gap-2">
+                  <p className="text-[10px] text-dark-text/50 uppercase tracking-widest font-bold mb-1">Carbon Wallet</p>
+                  <p className="text-3xl font-black text-dark-text tracking-tight flex items-center gap-2">
                     ₹4,250 
-                    <span className="text-xs font-medium text-primary-green bg-green-bg px-2 py-1 rounded-full flex items-center gap-1">
+                    <span className="text-xs font-bold text-primary-green bg-green-bg px-2.5 py-1 rounded-full flex items-center gap-1">
                       <TrendingUp className="w-3 h-3" /> +14%
                     </span>
                   </p>
                 </div>
               </div>
             </Widget>
-
           </div>
         </div>
       </div>
       
-      {/* Soil Wave Divider */}
       <div className="soil-wave"></div>
     </section>
   )
