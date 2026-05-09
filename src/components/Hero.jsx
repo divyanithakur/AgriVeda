@@ -1,190 +1,138 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-
-function AnimatedCounter({ target, decimals = 0 }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef();
-
-  useEffect(() => {
-    let startTime = null;
-    const duration = 2000;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        const animate = (currentTime) => {
-          if (!startTime) startTime = currentTime;
-          const progress = Math.min((currentTime - startTime) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          setCount(eased * target);
-          if (progress < 1) window.requestAnimationFrame(animate);
-        };
-        window.requestAnimationFrame(animate);
-        observer.disconnect();
-      }
-    });
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target]);
-
-  return <span ref={ref}>{count.toFixed(decimals).toLocaleString('en-IN')}</span>;
-}
 
 export default function Hero() {
-  const videoRef = useRef(null);
-  const [videoLoaded, setVideoLoaded] = useState(false);
+  const vidRef = useRef(null);
+  const [vidReady, setVidReady] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && videoRef.current) {
-      videoRef.current.pause();
-      setVideoLoaded(true);
+    const vid = vidRef.current;
+    if (!vid) return;
+
+    const show = () => setVidReady(true);
+    vid.addEventListener('canplay', show);
+    vid.addEventListener('loadeddata', show);
+    if (vid.readyState >= 3) show();
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+       vid.pause();
+       setVidReady(true);
     }
+
+    return () => {
+      vid.removeEventListener('canplay', show);
+      vid.removeEventListener('loadeddata', show);
+    };
   }, []);
 
-  const handleVideoLoad = () => {
-    setVideoLoaded(true);
-  };
-
   return (
-    <section className="hero-section relative min-h-screen flex flex-col justify-center overflow-hidden bg-[#0d2e18]" id="home">
+    <section className="hero relative min-h-screen flex flex-col overflow-hidden bg-[#071a0e]" id="home">
       
       {/* VIDEO BACKGROUND */}
       <video 
-        ref={videoRef}
-        className={`hero-video absolute inset-0 w-full h-full object-cover object-center z-0 transition-opacity duration-[1.2s] ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+        ref={vidRef}
+        className={`hero-video absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-[1.4s] ${vidReady ? 'opacity-100' : 'opacity-0'}`}
         autoPlay 
         muted 
         loop 
-        playsInline
-        onLoadedData={handleVideoLoad}
-        onCanPlay={handleVideoLoad}
-        poster="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=1200&q=60"
+        playsInline 
+        preload="metadata"
+        poster="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=1400&q=70"
       >
-        <source src="https://videos.pexels.com/video-files/5987267/5987267-uhd_2560_1440_25fps.mp4" type="video/mp4" />
-        <source src="https://videos.pexels.com/video-files/4753926/4753926-hd_1280_720_30fps.mp4" type="video/mp4" />
+        <source src="https://videos.pexels.com/video-files/5987267/5987267-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+        <source src="https://videos.pexels.com/video-files/4117442/4117442-hd_1280_720_25fps.mp4" type="video/mp4"/>
       </video>
 
-      {/* DARK OVERLAY */}
       <div className="hero-overlay absolute inset-0 z-[1]" style={{
-        background: 'linear-gradient(to right, rgba(8, 24, 12, 0.88) 0%, rgba(8, 24, 12, 0.70) 50%, rgba(8, 24, 12, 0.35) 100%)'
+        background: 'linear-gradient(105deg, rgba(5,18,10,0.90) 0%, rgba(5,18,10,0.72) 45%, rgba(5,18,10,0.30) 100%)'
       }}></div>
 
-      {/* FLOATING LEAVES */}
       <div className="floating-leaves absolute inset-0 pointer-events-none overflow-hidden z-[2]" aria-hidden="true">
         {[
-          { l: '6%', t: '25%', d: '9s', del: '0s', w: '28px', c: '#6BAE82' },
-          { l: '14%', t: '55%', d: '12s', del: '2s', w: '18px', c: '#F5A623' },
-          { l: '78%', t: '18%', d: '8s', del: '1s', w: '32px', c: '#6BAE82' },
-          { l: '70%', t: '65%', d: '14s', del: '4s', w: '20px', c: '#2E7D52' },
-          { l: '48%', t: '12%', d: '7s', del: '3s', w: '16px', c: '#F5A623' },
-          { l: '88%', t: '42%', d: '11s', del: '2.5s', w: '26px', c: '#6BAE82' },
+          { l: '5%',   t: '22%', d: '9s',  del: '0s',   w: '26px', f: '#6BAE82', o: 0.28 },
+          { l: '13%',  t: '58%', d: '12s', del: '2s',   w: '18px', f: '#F5A623', o: 0.22 },
+          { l: '22%',  t: '35%', d: '8s',  del: '1s',   w: '32px', f: '#6BAE82', o: 0.20 },
+          { l: '75%',  t: '18%', d: '10s', del: '3s',   w: '22px', f: '#2E7D52', o: 0.18 },
+          { l: '82%',  t: '62%', d: '14s', del: '1.5s', w: '16px', f: '#F5A623', o: 0.15 },
+          { l: '90%',  t: '40%', d: '11s', del: '0.5s', w: '28px', f: '#6BAE82', o: 0.24 },
+          { l: '48%',  t: '8%',  d: '7s',  del: '4s',   w: '20px', f: '#F5A623', o: 0.18 },
+          { l: '60%',  t: '75%', d: '13s', del: '2.5s', w: '24px', f: '#2E7D52', o: 0.22 },
         ].map((leaf, i) => (
-          <svg 
-            key={i} 
-            className="leaf absolute opacity-[0.22] animate-[floatLeaf_linear_infinite]" 
-            style={{ 
-              left: leaf.l, top: leaf.t, width: leaf.w, 
-              animationDuration: leaf.d, animationDelay: leaf.del 
-            }} 
-            viewBox="0 0 40 60"
-          >
-            <path d="M20 5 C35 5 38 25 20 55 C2 25 5 5 20 5Z" fill={leaf.c}/>
-          </svg>
+          <svg key={i} className="leaf absolute animate-[floatUp_linear_infinite]" style={{
+            width: leaf.w, left: leaf.l, top: leaf.t, animationDuration: leaf.d, animationDelay: leaf.del
+          }} viewBox="0 0 40 60"><path d="M20 4C34 4 37 24 20 56 3 24 6 4 20 4Z" fill={leaf.f} opacity={leaf.o}/></svg>
         ))}
       </div>
 
-      <style>{`
-        @keyframes floatLeaf {
-          0%   { transform: translateY(0)     rotate(0deg);  opacity: 0; }
-          10%  { opacity: 0.22; }
-          90%  { opacity: 0.22; }
-          100% { transform: translateY(-100px) rotate(30deg); opacity: 0; }
-        }
-        @keyframes pulseDot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.5); }
-        }
-        @keyframes scrollAnim {
-          0%   { transform: scaleY(0); transform-origin: top; }
-          50%  { transform: scaleY(1); transform-origin: top; }
-          51%  { transform: scaleY(1); transform-origin: bottom; }
-          100% { transform: scaleY(0); transform-origin: bottom; }
-        }
-      `}</style>
-
-      {/* MAIN CONTENT */}
-      <div className="hero-inner container relative z-[3] px-6 py-32 max-w-[1200px] mx-auto w-full">
-        <div className="hero-text-col max-w-[620px]">
-          
-          {/* Live badge */}
-          <div className="live-badge inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[40px] px-[18px] py-2 mb-6 text-[12px] font-bold text-white/90 uppercase tracking-wider">
-            <span className="live-dot w-2 h-2 bg-green-500 rounded-full animate-[pulseDot_1.5s_ease-in-out_infinite]"></span>
-            <span>LIVE — 10,247 farmers active now</span>
+      <div className="hero-inner container relative z-[3] flex-1 flex items-center pt-32 pb-20">
+        <div className="hero-content max-w-[640px]">
+          <div className="live-badge inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-[40px] px-5 py-2 mb-7 text-[12px] font-bold text-white/90 uppercase tracking-widest">
+            <span className="live-pulse w-2 h-2 bg-green-500 rounded-full animate-[pulse_1.6s_ease-in-out_infinite]"></span>
+            LIVE — 10,247 farmers active right now
           </div>
 
-          {/* Headline */}
-          <h1 className="hero-h1 text-[clamp(2.5rem,5.5vw,3.6rem)] font-extrabold text-white leading-[1.15] mb-5 tracking-tight shadow-sm">
+          <h1 className="text-white text-[clamp(2.2rem,5.5vw,3.8rem)] font-black leading-[1.12] mb-5 tracking-tight shadow-sm">
             Ancient wisdom meets<br/>
-            <span className="text-[#F5A623]">AI-powered farming</span>
+            <span className="text-amber">AI-powered farming</span>
           </h1>
 
-          {/* Subheadline */}
-          <p className="hero-sub text-[clamp(15px,2vw,18px)] text-white/80 leading-[1.75] mb-9 max-w-[500px] font-medium">
-            Monitor soil health, get biofertilizer recommendations, track weather — 
-            and earn carbon credits. All in one app, starting at just ₹500/month.
+          <p className="hero-sub text-[clamp(15px,2vw,18px)] text-white/78 leading-[1.78] mb-9 max-w-[520px] font-medium">
+            Monitor soil health · Get biofertilizer recommendations · Track hyperlocal weather · 
+            Earn carbon credits. Everything a modern Indian farmer needs — starting at just 
+            <strong className="text-amber ml-1">₹500/month</strong>.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="hero-btns flex gap-3.5 flex-wrap mb-6">
-            <a href="#pricing" className="btn-primary-hero bg-[#C8520A] text-white px-8 py-3.5 rounded-lg text-[16px] font-bold transition-all hover:bg-[#a03e06] hover:-translate-y-0.5 shadow-lg">
+          <div className="hero-actions flex gap-4 flex-wrap mb-8">
+            <a href="#pricing" className="btn-primary text-base px-9 py-3.5">
               🌱 Start Free Trial
             </a>
-            <a href="#demo" className="btn-secondary-hero bg-white/10 backdrop-blur-md text-white px-8 py-3.5 rounded-lg text-[16px] font-semibold border border-white/25 transition-all hover:bg-white/20 hover:-translate-y-0.5">
-              ▶ Watch Demo
+            <a href="#how-it-works" className="btn-outline-hero inline-flex items-center gap-2.5 bg-white/10 backdrop-blur-lg text-white px-7 py-3.5 rounded-lg text-sm font-bold border border-white/25 transition-all hover:bg-white/20 hover:-translate-y-0.5">
+              <span className="play-circle w-7 h-7 bg-white/20 rounded-full flex items-center justify-center text-[10px]">▶</span> 
+              See how it works
             </a>
           </div>
 
-          <p className="hero-trust text-[13px] text-white/50 mt-1">
-            Trusted by farmers in Maharashtra, Punjab, Karnataka, UP & 14 more states
-          </p>
+          <div className="hero-trust-row flex items-center gap-3.5">
+            <div className="trust-avatars flex items-center">
+              <img className="w-9 h-9 rounded-full border-2 border-white/60 -ml-2.5 first:ml-0 object-cover" src="https://images.unsplash.com/photo-1589923188900-85dae523342b?w=60&q=80" alt="farmer"/>
+              <img className="w-9 h-9 rounded-full border-2 border-white/60 -ml-2.5 object-cover" src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=60&q=80" alt="farmer"/>
+              <img className="w-9 h-9 rounded-full border-2 border-white/60 -ml-2.5 object-cover" src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=60&q=80" alt="farmer"/>
+              <div className="w-9 h-9 rounded-full bg-primary-green text-white text-[10px] font-black flex items-center justify-center -ml-2.5 border-2 border-white/40 shadow-sm">+10K</div>
+            </div>
+            <span className="trust-text text-sm text-white/60 font-medium">Trusted by farmers across 18 states</span>
+          </div>
         </div>
       </div>
 
-      {/* BOTTOM STATS BAR */}
-      <div className="hero-stats-bar relative z-[3] bg-[#08180c]/75 backdrop-blur-lg border-t border-white-[0.08]">
-        <div className="max-w-[900px] mx-auto px-6 py-5">
-          <div className="stats-inner flex items-center justify-center text-center">
-            <div className="stat-item flex-1 px-4">
-              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5 transition-transform hover:scale-110 cursor-default">
-                <AnimatedCounter target={10000} />+
-              </div>
-              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Farmers</div>
+      <div className="hero-stats-bar relative z-[3] bg-[#050f08]/80 backdrop-blur-2xl border-t border-white/10">
+        <div className="container py-5">
+          <div className="hero-stats-inner flex items-center justify-center flex-wrap">
+            <div className="hero-stat flex-1 min-w-[120px] text-center px-3 py-2">
+              <div className="hero-stat-num text-2xl font-black text-amber leading-none mb-1.5" data-count="10000" data-suffix="+">10,000+</div>
+              <div className="hero-stat-label text-[11px] text-white/50 uppercase tracking-widest font-bold">Active Farmers</div>
             </div>
-            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
-            <div className="stat-item flex-1 px-4">
-              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5"><AnimatedCounter target={18} /></div>
-              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">States covered</div>
+            <div className="hero-stat-divider w-px h-11 bg-white/10 hidden md:block"></div>
+            <div className="hero-stat flex-1 min-w-[120px] text-center px-3 py-2">
+              <div className="hero-stat-num text-2xl font-black text-amber leading-none mb-1.5" data-count="18">18</div>
+              <div className="hero-stat-label text-[11px] text-white/50 uppercase tracking-widest font-bold">States Covered</div>
             </div>
-            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
-            <div className="stat-item flex-1 px-4">
-              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5"><AnimatedCounter target={40} />%</div>
-              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Yield Increase</div>
+            <div className="hero-stat-divider w-px h-11 bg-white/10 hidden md:block"></div>
+            <div className="hero-stat flex-1 min-w-[120px] text-center px-3 py-2">
+              <div className="hero-stat-num text-2xl font-black text-amber leading-none mb-1.5" data-count="40" data-suffix="%">40%</div>
+              <div className="hero-stat-label text-[11px] text-white/50 uppercase tracking-widest font-bold">Avg Yield Increase</div>
             </div>
-            <div className="stat-divider w-[1px] height-[48px] bg-white/10"></div>
-            <div className="stat-item flex-1 px-4">
-              <div className="stat-num text-[26px] font-black text-[#F5A623] leading-none mb-1.5">₹<AnimatedCounter target={8000} /></div>
-              <div className="stat-label text-[11px] text-white/55 uppercase tracking-widest">Cost Saved</div>
+            <div className="hero-stat-divider w-px h-11 bg-white/10 hidden md:block"></div>
+            <div className="hero-stat flex-1 min-w-[120px] text-center px-3 py-2">
+              <div className="hero-stat-num text-2xl font-black text-amber leading-none mb-1.5" data-count="8000" data-prefix="₹">₹8,000</div>
+              <div className="hero-stat-label text-[11px] text-white/50 uppercase tracking-widest font-bold">Savings Per Season</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* SCROLL INDICATOR */}
-      <div className="scroll-indicator absolute bottom-20 right-10 z-[3] flex flex-col items-center gap-2 opacity-50 hidden md:flex" aria-hidden="true">
-        <div className="scroll-line w-[1px] h-12 bg-white/60 animate-[scrollAnim_2s_ease-in-out_infinite] origin-top"></div>
-        <span className="text-[9px] text-white uppercase tracking-widest [writing-mode:vertical-rl]">scroll</span>
+      <div className="scroll-indicator absolute bottom-24 right-10 z-[3] flex flex-col items-center gap-2 opacity-40 hidden md:flex" aria-hidden="true">
+        <div className="scroll-line w-px h-12 bg-white/60 animate-[scrollAnim_2.2s_ease-in-out_infinite] origin-top"></div>
+        <span className="text-[9px] text-white uppercase tracking-[0.14em] [writing-mode:vertical-rl] font-medium">scroll</span>
       </div>
-
     </section>
   )
 }

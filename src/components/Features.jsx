@@ -1,22 +1,18 @@
 import React, { useEffect } from 'react'
 
 export default function Features() {
-
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, i * 100);
+          const delay = i * 120;
+          setTimeout(() => entry.target.classList.add('in-view'), delay);
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
 
-    const cards = document.querySelectorAll('.feature-card');
-    cards.forEach((card) => observer.observe(card));
-
+    document.querySelectorAll('.feature-card').forEach(el => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
@@ -44,38 +40,34 @@ export default function Features() {
   ]
 
   return (
-    <>
-      <div className="wave-divider relative -mt-0.5 leading-[0] z-[5]" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" className="block w-full h-20">
-          <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#F9F4ED" />
-        </svg>
-      </div>
-
-      <section id="features" className="features-section bg-[#F9F4ED] py-24 relative z-4 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="section-header text-center max-w-2xl mx-auto mb-16">
-            <p className="text-primary-green text-sm uppercase tracking-[0.2em] font-bold mb-6">Core Infrastructure</p>
-            <h2 className="text-4xl md:text-5xl font-black font-display text-dark-text mb-4">
-              Scientific Precision for <span className="text-primary-green">Modern Agriculture.</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-7">
-            {features.map((feature, i) => (
-              <div 
-                key={i} 
-                className="feature-card bg-white rounded-[20px] p-9 border-t-[3px] border-[#F5A623] shadow-[0_2px_16px_rgba(26,92,56,0.06)] transition-all duration-[0.35s] hover:-translate-y-2 hover:shadow-[0_20px_48px_rgba(26,92,56,0.13)] group"
-              >
-                <div className="icon-wrap w-14 h-14 bg-[#E8F4EC] rounded-[14px] flex items-center justify-center text-3xl mb-5 transition-all duration-250 group-hover:bg-[#1A5C38] group-hover:scale-[1.08] group-hover:text-white">
-                  {feature.icon}
-                </div>
-                <h3 className="text-[18px] font-bold text-dark-text mb-2.5 font-display">{feature.title}</h3>
-                <p className="text-[14px] text-[#5C4033] leading-[1.7]">{feature.description}</p>
-              </div>
-            ))}
-          </div>
+    <section id="features" className="features-section bg-[#fff] py-24 relative overflow-hidden">
+      <div className="container">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <span className="section-badge">Core Infrastructure</span>
+          <h2 className="text-4xl md:text-5xl font-black text-earth mb-4">
+            Scientific Precision for <span className="text-primary-green">Modern Agriculture.</span>
+          </h2>
         </div>
-      </section>
-    </>
+
+        <div className="features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-14">
+          {features.map((feature, i) => (
+            <div 
+              key={i} 
+              className="feature-card bg-white border border-[#EAF0EA] rounded-[20px] p-9 pt-10 pb-8 border-top-4 border-amber shadow-sm transition-all duration-350 hover:-translate-y-2.5 hover:shadow-2xl group"
+              style={{ borderTop: '4px solid #F5A623' }}
+            >
+              <div className="icon-circle w-[60px] h-[60px] bg-green-bg rounded-2xl flex items-center justify-center text-3xl mb-6 transition-all duration-300 group-hover:bg-primary-green group-hover:scale-[1.08] group-hover:-rotate-4 group-hover:text-white">
+                {feature.icon}
+              </div>
+              <h3 className="text-18 font-extrabold text-earth mb-2.5 font-display">{feature.title}</h3>
+              <p className="text-14 text-soil leading-relaxed">{feature.description}</p>
+              <a href="#how-it-works" className="learn-more inline-flex items-center gap-1.5 mt-5 text-[13px] font-bold text-primary-green no-underline group-hover:gap-2.5 transition-all">
+                Learn more <span>→</span>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
