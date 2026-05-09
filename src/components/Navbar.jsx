@@ -50,7 +50,7 @@ export default function Navbar() {
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-7">
           {navLinks.map((link) => (
-            
+            <a
               key={link.label}
               href={link.href}
               onClick={() => setActiveLink(link.href)}
@@ -104,7 +104,7 @@ export default function Navbar() {
       >
         <div className="px-7 py-10 flex flex-col gap-1">
           {navLinks.map((link, i) => (
-            
+            <a
               key={link.label}
               href={link.href}
               onClick={() => setMenuOpen(false)}
